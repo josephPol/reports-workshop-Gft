@@ -1,4 +1,4 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure;
+package org.example.reportsworskhopgft.eventlog.domain;
 
 public interface EventLogRepository {
     void save(EventLog eventLog);
