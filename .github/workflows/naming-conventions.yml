@@ -1,12 +1,19 @@
-name: Naming Conventions
+name: Naming Conventions — Reporting
 
 on:
   push:
     branches-ignore:
       - main
+      - develop
   pull_request:
     branches:
-      - main
+      - develop
+
+env:
+  VALID_BRANCH_PATTERN: '^reporting/(feature|fix|chore|docs|test|refactor)/[a-z0-9]+(-[a-z0-9]+)*$'
+  VALID_COMMIT_PATTERN: '^\[reporting\] (feat|fix|chore|docs|test|refactor): .+'
+  BOT_PATTERN: '\[bot\]'
+  MERGE_PATTERN: '^Merge '
 
 jobs:
   check-branch-name:
@@ -16,19 +23,18 @@ jobs:
       - name: Validate branch name
         run: |
           BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
-          VALID_PATTERN='^(feature|fix|chore|docs|test|refactor)/[a-z0-9]+(-[a-z0-9]+)*$'
-
           echo "Branch: $BRANCH"
 
-          if ! echo "$BRANCH" | grep -qE "$VALID_PATTERN"; then
-            echo "❌ Invalid branch name: '$BRANCH'"
-            echo "   Expected: type/short-description"
-            echo "   Valid types: feature, fix, chore, docs, test, refactor"
-            echo "   Example: feature/truck-assignment"
-            exit 1
+          if echo "$BRANCH" | grep -qE "$VALID_BRANCH_PATTERN"; then
+            echo "✅ Branch name is valid"
+            exit 0
           fi
 
-          echo "✅ Branch name is valid"
+          echo "❌ Invalid branch name: '$BRANCH'"
+          echo "   Expected : reporting/type/short-description"
+          echo "   Valid types: feature, fix, chore, docs, test, refactor"
+          echo "   Example  : reporting/feature/event-log-consumer"
+          exit 1
 
   check-commit-messages:
     name: Check Commit Messages
@@ -38,45 +44,52 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Validate commit messages
+      - name: Resolve commit range
+        id: range
         run: |
-          VALID_TYPES="feat|fix|chore|docs|test|refactor"
-          VALID_PATTERN="^($VALID_TYPES): .+"
-          BOT_PATTERN='\[bot\]'
-          MERGE_PATTERN='^Merge '
-
           if [ "${{ github.event_name }}" = "pull_request" ]; then
-            RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+            echo "value=${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
           else
-            RANGE="-1"
+            echo "value=-1" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Validate commit messages
+        run: |
           FAILED=0
 
-          while IFS="|" read -r AUTHOR MSG; do
-            [ -z "$MSG" ] && continue
+          is_bot_commit()    { echo "$1" | grep -qE "$BOT_PATTERN"; }
+          is_merge_commit()  { echo "$1" | grep -qE "$MERGE_PATTERN"; }
+          is_valid_message() { echo "$1" | grep -qE "$VALID_COMMIT_PATTERN"; }
 
-            if echo "$AUTHOR" | grep -qE "$BOT_PATTERN"; then
-              echo "✅ Skipping bot commit: '$MSG'"
-              continue
+          validate_commit() {
+            local AUTHOR="$1"
+            local MSG="$2"
+
+            if is_bot_commit "$AUTHOR"; then
+              echo "✅ Skipping bot commit   : '$MSG'"
+              return 0
             fi
 
-            if echo "$MSG" | grep -qE "$MERGE_PATTERN"; then
-              echo "✅ Skipping merge commit: '$MSG'"
-              continue
+            if is_merge_commit "$MSG"; then
+              echo "✅ Skipping merge commit : '$MSG'"
+              return 0
             fi
 
-            if ! echo "$MSG" | grep -qE "$VALID_PATTERN"; then
+            if ! is_valid_message "$MSG"; then
               echo "❌ Invalid commit message: '$MSG'"
-              echo "   Expected: type: description"
+              echo "   Expected : [reporting] type: description"
               echo "   Valid types: feat, fix, chore, docs, test, refactor"
-              echo "   Example: feat: add event log aggregate"
-              FAILED=1
-              continue
+              echo "   Example  : [reporting] feat: add event log consumer"
+              return 1
             fi
 
             echo "✅ Valid: '$MSG'"
-          done <<< "$(git log --format="%an|%s" $RANGE)"
+          }
+
+          while IFS="|" read -r AUTHOR MSG; do
+            [ -z "$MSG" ] && continue
+            validate_commit "$AUTHOR" "$MSG" || FAILED=1
+          done <<< "$(git log --format="%an|%s" "${{ steps.range.outputs.value }}")"
 
           if [ "$FAILED" = "1" ]; then
             echo "❌ Some commits do not follow the naming convention"
@@ -84,3 +97,24 @@ jobs:
           fi
 
           echo "✅ All commits are valid"
+
+  check-coverage:
+    name: Check Coverage
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Run tests and verify 100% coverage
+        run: |
+          mvn verify \
+            org.jacoco:jacoco-maven-plugin:0.8.12:prepare-agent \
+            org.jacoco:jacoco-maven-plugin:0.8.12:report \
+            org.jacoco:jacoco-maven-plugin:0.8.12:check \
+            -Djacoco.haltOnFailure=true \
+            -Djacoco.rules='[{"element":"BUNDLE","limits":[{"counter":"INSTRUCTION","value":"COVEREDRATIO","minimum":"1.00"}]}]'
