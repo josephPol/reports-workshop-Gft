@@ -2,12 +2,9 @@ package org.example.reportsworskhopgft.eventlog.domain;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class EventLogDomainTest {
 
@@ -16,68 +13,31 @@ class EventLogDomainTest {
         EventLogId generated = EventLogId.generate();
 
         assertNotNull(generated);
-        assertNotNull(generated.getValue());
+        assertNotNull(generated.value());
     }
 
     @Test
-    void shouldExposeIdentifierStateThroughLombokGeneratedMethods() {
-        UUID uuid = UUID.randomUUID();
-        EventLogId left = new EventLogId(uuid);
-        EventLogId right = new EventLogId();
-        right.setValue(uuid);
-
-        assertEquals(uuid, left.getValue());
-        assertEquals(left, right);
-        assertEquals(left.hashCode(), right.hashCode());
-        assertTrue(left.toString().contains(uuid.toString()));
+    void shouldRejectBlankIdentifierValues() {
+        assertThrows(IllegalArgumentException.class, () -> new EventLogId(" "));
+        assertThrows(IllegalArgumentException.class, () -> new EventLogId(null));
     }
 
     @Test
-    void shouldExposeEventLogStateThroughLombokGeneratedMethods() {
-        EventLogId eventLogId = new EventLogId(UUID.randomUUID());
-        EventLog eventLog = new EventLog(
-                eventLogId,
-                EventType.DELIVERY_CREATED,
-                SourceService.REPORTING,
+    void shouldExposeEventLogState() {
+        EventLog eventLog = EventLog.create(
+                EventType.DELIVERY_CREATED.name(),
+                SourceService.REPORTING.name(),
                 "{\"payload\":true}",
                 7,
                 "2026-05-04T12:00:00"
         );
 
-        assertEquals(eventLogId, eventLog.getId());
-        assertEquals(EventType.DELIVERY_CREATED, eventLog.getEventType());
-        assertEquals(SourceService.REPORTING, eventLog.getSourceService());
+        assertNotNull(eventLog.getId());
+        assertEquals(EventType.DELIVERY_CREATED.name(), eventLog.getEventType());
+        assertEquals(SourceService.REPORTING.name(), eventLog.getSourceService());
         assertEquals("{\"payload\":true}", eventLog.getPayload());
         assertEquals(7, eventLog.getSimulationDay());
-        assertEquals("2026-05-04T12:00:00", eventLog.getOcurredAt());
-        assertTrue(eventLog.toString().contains("DELIVERY_CREATED"));
-    }
-
-    @Test
-    void shouldCompareEventLogsByValue() {
-        EventLogId eventLogId = new EventLogId(UUID.randomUUID());
-        EventLog left = new EventLog(
-                eventLogId,
-                EventType.DELIVERY_CREATED,
-                SourceService.REPORTING,
-                "{\"payload\":true}",
-                7,
-                "2026-05-04T12:00:00"
-        );
-        EventLog right = new EventLog();
-        right.setId(eventLogId);
-        right.setEventType(EventType.DELIVERY_CREATED);
-        right.setSourceService(SourceService.REPORTING);
-        right.setPayload("{\"payload\":true}");
-        right.setSimulationDay(7);
-        right.setOcurredAt("2026-05-04T12:00:00");
-
-        assertEquals(left, right);
-        assertEquals(left.hashCode(), right.hashCode());
-
-        right.setSimulationDay(8);
-
-        assertNotEquals(left, right);
+        assertEquals("2026-05-04T12:00:00", eventLog.getOccurredAt());
     }
 
     @Test
