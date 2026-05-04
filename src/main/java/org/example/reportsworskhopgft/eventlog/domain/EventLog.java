@@ -38,3 +38,4 @@ public class EventLog {
     public int getSimulationDay() { return simulationDay; }
     public String getOccurredAt() { return occurredAt; }
 }
+//
