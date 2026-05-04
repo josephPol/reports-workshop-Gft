@@ -1,0 +1,86 @@
+name: Naming Conventions
+
+on:
+  push:
+    branches-ignore:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-branch-name:
+    name: Check Branch Name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate branch name
+        run: |
+          BRANCH="${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}"
+          VALID_PATTERN='^(feature|fix|chore|docs|test|refactor)/[a-z0-9]+(-[a-z0-9]+)*$'
+
+          echo "Branch: $BRANCH"
+
+          if ! echo "$BRANCH" | grep -qE "$VALID_PATTERN"; then
+            echo "❌ Invalid branch name: '$BRANCH'"
+            echo "   Expected: type/short-description"
+            echo "   Valid types: feature, fix, chore, docs, test, refactor"
+            echo "   Example: feature/truck-assignment"
+            exit 1
+          fi
+
+          echo "✅ Branch name is valid"
+
+  check-commit-messages:
+    name: Check Commit Messages
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Validate commit messages
+        run: |
+          VALID_TYPES="feat|fix|chore|docs|test|refactor"
+          VALID_PATTERN="^($VALID_TYPES): .+"
+          BOT_PATTERN='\[bot\]'
+          MERGE_PATTERN='^Merge '
+
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            RANGE="${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
+          else
+            RANGE="-1"
+          fi
+
+          FAILED=0
+
+          while IFS="|" read -r AUTHOR MSG; do
+            [ -z "$MSG" ] && continue
+
+            if echo "$AUTHOR" | grep -qE "$BOT_PATTERN"; then
+              echo "✅ Skipping bot commit: '$MSG'"
+              continue
+            fi
+
+            if echo "$MSG" | grep -qE "$MERGE_PATTERN"; then
+              echo "✅ Skipping merge commit: '$MSG'"
+              continue
+            fi
+
+            if ! echo "$MSG" | grep -qE "$VALID_PATTERN"; then
+              echo "❌ Invalid commit message: '$MSG'"
+              echo "   Expected: type: description"
+              echo "   Valid types: feat, fix, chore, docs, test, refactor"
+              echo "   Example: feat: add event log aggregate"
+              FAILED=1
+              continue
+            fi
+
+            echo "✅ Valid: '$MSG'"
+          done <<< "$(git log --format="%an|%s" $RANGE)"
+
+          if [ "$FAILED" = "1" ]; then
+            echo "❌ Some commits do not follow the naming convention"
+            exit 1
+          fi
+
+          echo "✅ All commits are valid"
