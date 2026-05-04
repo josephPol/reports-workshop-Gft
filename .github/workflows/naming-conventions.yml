@@ -4,10 +4,12 @@ on:
   push:
     branches-ignore:
       - main
+      - master
       - develop
   pull_request:
     branches:
       - develop
+      - master
 
 env:
   VALID_BRANCH_PATTERN: '^reporting/(feature|fix|chore|docs|test|refactor)/[a-z0-9]+(-[a-z0-9]+)*$'
