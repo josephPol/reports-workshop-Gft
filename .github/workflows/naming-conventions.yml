@@ -48,9 +48,11 @@ jobs:
         id: range
         run: |
           if [ "${{ github.event_name }}" = "pull_request" ]; then
+            # En PR: todos los commits de la rama contra la base
             echo "value=${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}" >> "$GITHUB_OUTPUT"
           else
-            echo "value=-1" >> "$GITHUB_OUTPUT"
+            # En push: todos los commits del push, no solo el último
+            echo "value=${{ github.event.before }}..${{ github.event.after }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Validate commit messages
@@ -109,12 +111,16 @@ jobs:
         with:
           java-version: '21'
           distribution: 'temurin'
+          cache: maven                    # fix: cachea dependencias Maven
 
-      - name: Run tests and verify 100% coverage
+      - name: Run tests and enforce domain coverage
         run: |
           mvn verify \
-            org.jacoco:jacoco-maven-plugin:0.8.12:prepare-agent \
-            org.jacoco:jacoco-maven-plugin:0.8.12:report \
-            org.jacoco:jacoco-maven-plugin:0.8.12:check \
+            jacoco:prepare-agent \
+            jacoco:report \
+            jacoco:check \
+            -Djacoco.version=0.8.12 \
             -Djacoco.haltOnFailure=true \
-            -Djacoco.rules='[{"element":"BUNDLE","limits":[{"counter":"INSTRUCTION","value":"COVEREDRATIO","minimum":"1.00"}]}]'
+            -Djacoco.dataFile=target/jacoco.exec \
+            -Djacoco.rules.file=.jacoco-rules.xml \
+            --no-transfer-progress

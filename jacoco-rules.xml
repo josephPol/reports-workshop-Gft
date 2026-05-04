@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Reglas de cobertura para la capa domain de Reporting.
+    Pasado al workflow via -Djacoco.rules.file sin tocar el pom.xml.
+    Ajusta el include si tu package base difiere de com/gft/reporting/domain.
+-->
+<jacoco xmlns="http://www.jacoco.org/jacoco/core/0.8"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.jacoco.org/jacoco/core/0.8">
+    <check>
+        <rule element="PACKAGE">
+            <includes>
+                <include>com/gft/reporting/domain/**</include>
+            </includes>
+            <excludes>
+                <!-- Value Objects de identidad: Lombok genera código no testeable -->
+                <exclude>**/*Id</exclude>
+            </excludes>
+            <limit counter="LINE" value="COVEREDRATIO" minimum="1.00"/>
+            <limit counter="BRANCH" value="COVEREDRATIO" minimum="1.00"/>
+        </rule>
+    </check>
+</jacoco>
