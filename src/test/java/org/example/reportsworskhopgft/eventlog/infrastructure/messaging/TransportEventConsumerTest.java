@@ -9,6 +9,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -45,5 +46,12 @@ class TransportEventConsumerTest {
 
 
         verify(eventLogService, times(1)).logEvent(any(TruckRegisteredEvent.class));
+    }
+    @Test
+    void shouldThrowRuntimeExceptionWhenMessageIsInvalid() {
+        String invalidJson = "esto-no-es-json";
+        assertThatThrownBy(() -> consumer.onTruckRegistered(invalidJson))
+        .isInstanceOf(RuntimeException.class)
+        .hasMessageContaining("Error deserializando el evento de RabbitMQ");
     }
 }
