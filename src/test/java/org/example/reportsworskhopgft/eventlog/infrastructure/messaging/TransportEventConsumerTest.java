@@ -1,7 +1,7 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogService;
+import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

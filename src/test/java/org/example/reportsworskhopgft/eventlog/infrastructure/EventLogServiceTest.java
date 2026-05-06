@@ -1,5 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
+import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.domain.EventLogRepository;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure;
+package org.example.reportsworskhopgft.eventlog.application;
 
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.domain.EventLogRepository;
