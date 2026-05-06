@@ -1,4 +1,9 @@
 package org.example.reportsworskhopgft.blockedorder.infrastructure;
 
-public class BlockedOrderRepository {
+import org.example.reportsworskhopgft.blockedorder.domain.BlockedOrder;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface BlockedOrderRepository extends JpaRepository<BlockedOrder, Integer> {
 }

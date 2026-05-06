@@ -9,6 +9,5 @@ class BlockedOrderInfrastructureTest {
     @Test
     void shouldCreateControllerAndRepositoryAdapters() {
         assertNotNull(new BlockedOrderController());
-        assertNotNull(new BlockedOrderRepository());
     }
 }
