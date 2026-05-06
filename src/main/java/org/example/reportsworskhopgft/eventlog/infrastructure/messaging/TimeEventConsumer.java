@@ -3,7 +3,7 @@ package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
