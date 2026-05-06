@@ -24,17 +24,18 @@ class EventLogDomainTest {
 
     @Test
     void shouldExposeEventLogState() {
-        EventLog eventLog = EventLog.create(
-                EventType.DELIVERY_CREATED.name(),
-                SourceService.REPORTING.name(),
+        EventLog eventLog = new EventLog(
+                EventLogId.generate(),
+                EventType.DELIVERY_CREATED,
+                SourceService.REPORTING,
                 "{\"payload\":true}",
                 7,
                 "2026-05-04T12:00:00"
         );
 
         assertNotNull(eventLog.getId());
-        assertEquals(EventType.DELIVERY_CREATED.name(), eventLog.getEventType().name());
-        assertEquals(SourceService.REPORTING.name(), eventLog.getSourceService().name());
+        assertEquals(EventType.DELIVERY_CREATED, eventLog.getEventType());
+        assertEquals(SourceService.REPORTING, eventLog.getSourceService());
         assertEquals("{\"payload\":true}", eventLog.getPayload());
         assertEquals(7, eventLog.getSimulationDay());
         assertEquals("2026-05-04T12:00:00", eventLog.getOccurredAt());
@@ -46,24 +47,5 @@ class EventLogDomainTest {
         assertEquals(EventType.WAREHOUSE_STOCK_CHANGED, EventType.values()[EventType.values().length - 1]);
         assertEquals(SourceService.FACTORY, SourceService.valueOf("FACTORY"));
         assertEquals(SourceService.REPORTING, SourceService.values()[SourceService.values().length - 1]);
-    }
-    @Test
-    void shouldCreateEventLogUsingFactoryMethod() {
-
-        EventLog eventLog = EventLog.create(
-                "TRUCK_REGISTERED",
-                "TRANSPORT",
-                "{\"test\":\"data\"}",
-                1,
-                "2026-05-06T10:00:00"
-        );
-
-
-        org.junit.jupiter.api.Assertions.assertNotNull(eventLog.getId());
-        org.junit.jupiter.api.Assertions.assertEquals("TRUCK_REGISTERED", eventLog.getEventType().name());
-        org.junit.jupiter.api.Assertions.assertEquals("TRANSPORT", eventLog.getSourceService().name());
-        org.junit.jupiter.api.Assertions.assertEquals("{\"test\":\"data\"}", eventLog.getPayload());
-        org.junit.jupiter.api.Assertions.assertEquals(1, eventLog.getSimulationDay());
-        org.junit.jupiter.api.Assertions.assertEquals("2026-05-06T10:00:00", eventLog.getOccurredAt());
     }
 }
