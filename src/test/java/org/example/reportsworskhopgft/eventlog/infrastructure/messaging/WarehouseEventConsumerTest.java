@@ -1,0 +1,59 @@
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
+@ExtendWith(MockitoExtension.class)
+class WarehouseEventConsumerTest {
+
+    @Mock
+    private EventLogService eventLogService;
+
+    @Spy
+    private ObjectMapper objectMapper = new ObjectMapper();
+
+    @InjectMocks
+    private WarehouseEventConsumer consumer;
+
+    @Test
+    void should_process_warehouse_stock_changed_event() {
+        String validJson = """
+                {
+                  "productId": "abc-123",
+                  "quantity": 50,
+                  "type": "INCREASE"
+                }
+                """;
+
+        consumer.onWarehouseStockChanged(validJson);
+
+        verify(eventLogService, times(1)).save(
+                eq("warehouse.stock.changed.v1"),
+                eq("warehouse"),
+                any(String.class),
+                eq(0),
+                eq("")
+        );
+    }
+
+    @Test
+    void should_throw_exception_when_message_is_invalid() {
+        String invalidJson = "esto-no-es-json";
+
+        assertThatThrownBy(() -> consumer.onWarehouseStockChanged(invalidJson))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Error procesando warehouse.stock.changed.v1");
+    }
+}
