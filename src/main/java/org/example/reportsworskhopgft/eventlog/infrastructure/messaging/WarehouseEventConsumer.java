@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.domain.EventType;
+import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +22,8 @@ public class WarehouseEventConsumer {
         try {
             WarehouseStockChangedMessage event = objectMapper.readValue(message, WarehouseStockChangedMessage.class);
             eventLogService.save(
-                    "warehouse.stock.changed.v1",
-                    "warehouse",
+                    EventType.WAREHOUSE_STOCK_CHANGED,
+                    SourceService.WAREHOUSE,
                     event.toPayload(),
                     0,
                     ""
