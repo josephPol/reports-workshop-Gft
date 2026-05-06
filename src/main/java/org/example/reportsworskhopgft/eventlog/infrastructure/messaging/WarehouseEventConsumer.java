@@ -9,34 +9,28 @@ import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
-
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
-public class TransportEventConsumer {
-
+public class WarehouseEventConsumer {
 
     private final EventLogServiceImpl eventLogServiceImpl;
     private final ObjectMapper objectMapper;
 
-    @RabbitListener(queues = "truck.registered.v1")
-    public void onTruckRegistered(String message) {
+    @RabbitListener(queues = "${rabbitmq.queues.warehouse-stock-changed}")
+    public void onWarehouseStockChanged(String message) {
         try {
-
-            TruckRegisteredEvent event = objectMapper.readValue(message, TruckRegisteredEvent.class);
-
-
+            WarehouseStockChangedMessage event = objectMapper.readValue(message, WarehouseStockChangedMessage.class);
             eventLogServiceImpl.save(
-                    EventType.TRUCK_REGISTERED,
-                    SourceService.TRANSPORT,
-                    message, // Guardamos el texto JSON original entero en la base de datos
-                    event.timestamp(),
-                    LocalDateTime.now().toString()
+                    EventType.WAREHOUSE_STOCK_CHANGED,
+                    SourceService.WAREHOUSE,
+                    event.toPayload(),
+                    0,
+                    ""
             );
         } catch (Exception e) {
-            log.error("Error processing truck message. Payload: {}", message, e);
-            throw new RuntimeException("Error deserializing RabbitMQ event", e);
+            log.error("Error processing warehouse.stock.changed.v1. Payload: {}", message, e);
+            throw new RuntimeException("Error processing warehouse.stock.changed.v1", e);
         }
     }
 }

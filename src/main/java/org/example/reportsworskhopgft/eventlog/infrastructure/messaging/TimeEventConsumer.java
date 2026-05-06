@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.application.EventLogServiceImpl;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -14,23 +14,24 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class TimeEventConsumer {
 
-    private final EventLogService eventLogService;
+    private final EventLogServiceImpl eventLogServiceImpl;
     private final ObjectMapper objectMapper;
 
     @RabbitListener(queues = "${rabbitmq.queues.time-advanced}")
     public void onTimeAdvanced(String message) {
         try {
             TimeAdvancedMessage event = objectMapper.readValue(message, TimeAdvancedMessage.class);
-            eventLogService.save(
+            eventLogServiceImpl.save(
                     EventType.TIME_ADVANCED,
                     SourceService.TIME,
                     event.toPayload(),
                     event.simulationDay(),
                     event.occurredAt()
             );
-        } catch (Exception e) {
-            log.error("Error procesando time.advanced.v1. Payload: {}", message, e);
-            throw new RuntimeException("Error procesando time.advanced.v1", e);
-        }
+        }catch (Exception e) {
+        log.error("Error processing time.advanced.v1. Payload: {}", message, e);
+        throw new RuntimeException("Error processing time.advanced.v1", e);
     }
+    }
+
 }

@@ -1,18 +1,17 @@
 package org.example.reportsworskhopgft.eventlog.application;
 
 import org.example.reportsworskhopgft.eventlog.domain.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventLogService {
+public class EventLogServiceImpl {
 
     private final EventLogRepository eventLogRepository;
 
-    public EventLogService(EventLogRepository eventLogRepository) {
+    public EventLogServiceImpl(EventLogRepository eventLogRepository) {
         this.eventLogRepository = eventLogRepository;
     }
-
 
     public void save(EventType eventType, SourceService sourceService,
                      String payload, Integer simulationDay, String occurredAt) {

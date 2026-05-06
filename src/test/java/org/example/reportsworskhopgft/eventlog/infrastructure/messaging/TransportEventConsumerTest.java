@@ -3,7 +3,7 @@ package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.application.EventLogServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 class TransportEventConsumerTest {
 
     @Mock
-    private EventLogService eventLogService;
+    private EventLogServiceImpl eventLogServiceImpl;
 
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -30,8 +30,7 @@ class TransportEventConsumerTest {
 
     @BeforeEach
     void setUp() {
-        // Inyectamos el servicio de tus compañeros y el mapper
-        consumer = new TransportEventConsumer(eventLogService, objectMapper);
+        consumer = new TransportEventConsumer(eventLogServiceImpl, objectMapper);
     }
 
     @Test
@@ -48,8 +47,8 @@ class TransportEventConsumerTest {
 
         consumer.onTruckRegistered(jsonMessage);
 
-        // Verificamos que llamamos al método save() de tus compañeros con los parámetros exactos
-        verify(eventLogService, times(1)).save(
+
+        verify(eventLogServiceImpl, times(1)).save(
                 eq(EventType.TRUCK_REGISTERED), // eventType
                 eq(SourceService.TRANSPORT),        // sourceService
                 eq(jsonMessage),        // payload (le pasamos el JSON intacto)
@@ -64,6 +63,6 @@ class TransportEventConsumerTest {
 
         assertThatThrownBy(() -> consumer.onTruckRegistered(invalidMessage))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error deserializando el evento");
+                .hasMessageContaining("Error deserializing RabbitMQ event");
     }
 }
