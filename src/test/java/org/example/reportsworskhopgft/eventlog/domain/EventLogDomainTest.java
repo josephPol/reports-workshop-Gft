@@ -33,8 +33,8 @@ class EventLogDomainTest {
         );
 
         assertNotNull(eventLog.getId());
-        assertEquals(EventType.DELIVERY_CREATED.name(), eventLog.getEventType());
-        assertEquals(SourceService.REPORTING.name(), eventLog.getSourceService());
+        assertEquals(EventType.DELIVERY_CREATED.name(), eventLog.getEventType().name());
+        assertEquals(SourceService.REPORTING.name(), eventLog.getSourceService().name());
         assertEquals("{\"payload\":true}", eventLog.getPayload());
         assertEquals(7, eventLog.getSimulationDay());
         assertEquals("2026-05-04T12:00:00", eventLog.getOccurredAt());
