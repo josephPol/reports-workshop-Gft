@@ -1,7 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.application;
 
 import org.example.reportsworskhopgft.eventlog.domain.*;
-import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogRepository;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -56,6 +56,36 @@ class WarehouseEventConsumerTest {
 
         assertThatThrownBy(() -> consumer.onWarehouseStockChanged(invalidJson))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error processing warehouse.stock.changed.v1");
+                .hasMessageContaining("Error procesando warehouse.stock.changed.v1");
+    }
+
+    @Test
+    void should_process_replenishment_requested_event() {
+        String validJson = """
+                {
+                  "productId": "abc-123",
+                  "quantity": 50,
+                  "type": "REPLENISHMENT"
+                }
+                """;
+
+        consumer.onReplenishmentRequested(validJson);
+
+        verify(eventLogServiceImpl, times(1)).save(
+                eq(EventType.REPLENISHMENT_REQUESTED),
+                eq(SourceService.WAREHOUSE),
+                any(String.class),
+                eq(0),
+                eq("")
+        );
+    }
+
+    @Test
+    void should_throw_exception_when_replenishment_message_is_invalid() {
+        String invalidJson = "esto-no-es-json";
+
+        assertThatThrownBy(() -> consumer.onReplenishmentRequested(invalidJson))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Error procesando replenishment.requested.v1");
     }
 }

@@ -14,14 +14,14 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class WarehouseEventConsumer {
 
-    private final EventLogServiceImpl eventLogServiceImpl;
+    private final EventLogServiceImpl eventLogService;
     private final ObjectMapper objectMapper;
 
     @RabbitListener(queues = "${rabbitmq.queues.warehouse-stock-changed}")
     public void onWarehouseStockChanged(String message) {
         try {
             WarehouseStockChangedMessage event = objectMapper.readValue(message, WarehouseStockChangedMessage.class);
-            eventLogServiceImpl.save(
+            eventLogService.save(
                     EventType.WAREHOUSE_STOCK_CHANGED,
                     SourceService.WAREHOUSE,
                     event.toPayload(),
@@ -29,8 +29,25 @@ public class WarehouseEventConsumer {
                     ""
             );
         } catch (Exception e) {
-            log.error("Error processing warehouse.stock.changed.v1. Payload: {}", message, e);
-            throw new RuntimeException("Error processing warehouse.stock.changed.v1", e);
+            log.error("Error procesando warehouse.stock.changed.v1. Payload: {}", message, e);
+            throw new RuntimeException("Error procesando warehouse.stock.changed.v1", e);
+        }
+    }
+
+    @RabbitListener(queues = "${rabbitmq.queues.replenishment-requested}")
+    public void onReplenishmentRequested(String message) {
+        try {
+            ReplenishmentRequestedMessage event = objectMapper.readValue(message, ReplenishmentRequestedMessage.class);
+            eventLogService.save(
+                    EventType.REPLENISHMENT_REQUESTED,
+                    SourceService.WAREHOUSE,
+                    event.toPayload(),
+                    0,
+                    ""
+            );
+        } catch (Exception e) {
+            log.error("Error procesando replenishment.requested.v1. Payload: {}", message, e);
+            throw new RuntimeException("Error procesando replenishment.requested.v1", e);
         }
     }
 }
