@@ -1,41 +1,43 @@
 package org.example.reportsworskhopgft.eventlog.domain;
 
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Table(name = "event_logs")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class EventLog {
 
-    private final EventLogId id;
-    private final String eventType;
-    private final String sourceService;
-    private final String payload;
-    private final int simulationDay;
-    private final String occurredAt;
+    @EmbeddedId
+    private EventLogId id;
 
-    private EventLog(EventLogId id, String eventType, String sourceService,
-                     String payload, int simulationDay, String occurredAt) {
-        this.id = id;
-        this.eventType = eventType;
-        this.sourceService = sourceService;
-        this.payload = payload;
-        this.simulationDay = simulationDay;
-        this.occurredAt = occurredAt;
-    }
+    @Enumerated(EnumType.STRING)
+    private EventType eventType;
 
-    public static EventLog create(String eventType, String sourceService,
-                                  String payload, int simulationDay, String occurredAt) {
+    @Enumerated(EnumType.STRING)
+    private SourceService sourceService;
+
+    @Column(columnDefinition = "TEXT")
+    private String payload;
+
+    private int simulationDay;
+
+
+    private String occurredAt;
+
+
+    public static EventLog create(String eventType, String sourceService, String payload, int simulationDay, String occurredAt) {
         return new EventLog(
                 EventLogId.generate(),
-                eventType,
-                sourceService,
+                EventType.valueOf(eventType),
+                SourceService.valueOf(sourceService),
                 payload,
                 simulationDay,
                 occurredAt
         );
     }
-
-    public EventLogId getId() { return id; }
-    public String getEventType() { return eventType; }
-    public String getSourceService() { return sourceService; }
-    public String getPayload() { return payload; }
-    public int getSimulationDay() { return simulationDay; }
-    public String getOccurredAt() { return occurredAt; }
 }
-//
