@@ -3,7 +3,9 @@ package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogService;
+import org.example.reportsworskhopgft.eventlog.domain.EventType;
+import org.example.reportsworskhopgft.eventlog.domain.SourceService;
+import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
@@ -20,8 +22,8 @@ public class TimeEventConsumer {
         try {
             TimeAdvancedMessage event = objectMapper.readValue(message, TimeAdvancedMessage.class);
             eventLogService.save(
-                    "time.advanced.v1",
-                    "time",
+                    EventType.TIME_ADVANCED,
+                    SourceService.TIME,
                     event.toPayload(),
                     event.simulationDay(),
                     event.occurredAt()
@@ -32,4 +34,3 @@ public class TimeEventConsumer {
         }
     }
 }
-//

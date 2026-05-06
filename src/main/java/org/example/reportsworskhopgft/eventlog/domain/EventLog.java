@@ -1,43 +1,46 @@
 package org.example.reportsworskhopgft.eventlog.domain;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
-@Entity
-@Table(name = "event_logs")
-@Data
+import java.util.UUID;
+
 @AllArgsConstructor
 @NoArgsConstructor
+@Data
+@Entity
+@Table(name = "event_log")
 public class EventLog {
 
     @EmbeddedId
+    @Column(name = "id", nullable = false)
     private EventLogId id;
 
+    @Size(max = 100)
+    @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "event_type", nullable = false, length = 100)
     private EventType eventType;
 
+    @Size(max = 100)
+    @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "source_service", nullable = false, length = 100)
     private SourceService sourceService;
 
-    @Column(columnDefinition = "TEXT")
+    @NotNull
+    @Column(name = "payload", nullable = false, length = Integer.MAX_VALUE)
     private String payload;
 
-    private int simulationDay;
+    @NotNull
+    @Column(name = "simulation_day", nullable = false)
+    private Integer simulationDay;
 
-
+    @Size(max = 50)
+    @NotNull
+    @Column(name = "occurred_at", nullable = false, length = 50)
     private String occurredAt;
 
-
-    public static EventLog create(String eventType, String sourceService, String payload, int simulationDay, String occurredAt) {
-        return new EventLog(
-                EventLogId.generate(),
-                EventType.valueOf(eventType),
-                SourceService.valueOf(sourceService),
-                payload,
-                simulationDay,
-                occurredAt
-        );
-    }
 }

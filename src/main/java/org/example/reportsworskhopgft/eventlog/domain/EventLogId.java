@@ -1,5 +1,8 @@
 package org.example.reportsworskhopgft.eventlog.domain;
 
+import jakarta.persistence.Embeddable;
+
+@Embeddable
     public record EventLogId(String value) {
 
         public EventLogId {
