@@ -47,4 +47,23 @@ class EventLogDomainTest {
         assertEquals(SourceService.FACTORY, SourceService.valueOf("FACTORY"));
         assertEquals(SourceService.REPORTING, SourceService.values()[SourceService.values().length - 1]);
     }
+    @Test
+    void shouldCreateEventLogUsingFactoryMethod() {
+
+        EventLog eventLog = EventLog.create(
+                "TRUCK_REGISTERED",
+                "TRANSPORT",
+                "{\"test\":\"data\"}",
+                1,
+                "2026-05-06T10:00:00"
+        );
+
+
+        org.junit.jupiter.api.Assertions.assertNotNull(eventLog.getId());
+        org.junit.jupiter.api.Assertions.assertEquals("TRUCK_REGISTERED", eventLog.getEventType().name());
+        org.junit.jupiter.api.Assertions.assertEquals("TRANSPORT", eventLog.getSourceService().name());
+        org.junit.jupiter.api.Assertions.assertEquals("{\"test\":\"data\"}", eventLog.getPayload());
+        org.junit.jupiter.api.Assertions.assertEquals(1, eventLog.getSimulationDay());
+        org.junit.jupiter.api.Assertions.assertEquals("2026-05-06T10:00:00", eventLog.getOccurredAt());
+    }
 }
