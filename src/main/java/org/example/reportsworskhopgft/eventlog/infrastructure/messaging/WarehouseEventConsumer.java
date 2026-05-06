@@ -3,35 +3,34 @@ package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class TimeEventConsumer {
+public class WarehouseEventConsumer {
 
     private final EventLogService eventLogService;
     private final ObjectMapper objectMapper;
 
-    @RabbitListener(queues = "${rabbitmq.queues.time-advanced}")
-    public void onTimeAdvanced(String message) {
+    @RabbitListener(queues = "${rabbitmq.queues.warehouse-stock-changed}")
+    public void onWarehouseStockChanged(String message) {
         try {
-            TimeAdvancedMessage event = objectMapper.readValue(message, TimeAdvancedMessage.class);
+            WarehouseStockChangedMessage event = objectMapper.readValue(message, WarehouseStockChangedMessage.class);
             eventLogService.save(
-                    EventType.TIME_ADVANCED,
-                    SourceService.TIME,
+                    EventType.WAREHOUSE_STOCK_CHANGED,
+                    SourceService.WAREHOUSE,
                     event.toPayload(),
-                    event.simulationDay(),
-                    event.occurredAt()
+                    0,
+                    ""
             );
         } catch (Exception e) {
-            log.error("Error procesando time.advanced.v1. Payload: {}", message, e);
-            throw new RuntimeException("Error procesando time.advanced.v1", e);
+            log.error("Error procesando warehouse.stock.changed.v1. Payload: {}", message, e);
+            throw new RuntimeException("Error procesando warehouse.stock.changed.v1", e);
         }
     }
-
 }

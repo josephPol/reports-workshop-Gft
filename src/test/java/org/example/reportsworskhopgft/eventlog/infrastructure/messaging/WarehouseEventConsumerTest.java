@@ -1,10 +1,9 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-
+import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -14,10 +13,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class TimeEventConsumerTest {
+class WarehouseEventConsumerTest {
 
     @Mock
     private EventLogService eventLogService;
@@ -26,25 +27,26 @@ class TimeEventConsumerTest {
     private ObjectMapper objectMapper = new ObjectMapper();
 
     @InjectMocks
-    private TimeEventConsumer consumer;
+    private WarehouseEventConsumer consumer;
 
     @Test
-    void should_process_time_advanced_event() {
+    void should_process_warehouse_stock_changed_event() {
         String validJson = """
                 {
-                  "simulationDay": 3,
-                  "occurredAt": "2024-01-01T00:00:00Z"
+                  "productId": "abc-123",
+                  "quantity": 50,
+                  "type": "INCREASE"
                 }
                 """;
 
-        consumer.onTimeAdvanced(validJson);
+        consumer.onWarehouseStockChanged(validJson);
 
         verify(eventLogService, times(1)).save(
-                eq(EventType.TIME_ADVANCED),
-                eq(SourceService.TIME),
+                eq(EventType.WAREHOUSE_STOCK_CHANGED),
+                eq(SourceService.WAREHOUSE),
                 any(String.class),
-                eq(3),
-                eq("2024-01-01T00:00:00Z")
+                eq(0),
+                eq("")
         );
     }
 
@@ -52,8 +54,8 @@ class TimeEventConsumerTest {
     void should_throw_exception_when_message_is_invalid() {
         String invalidJson = "esto-no-es-json";
 
-        assertThatThrownBy(() -> consumer.onTimeAdvanced(invalidJson))
+        assertThatThrownBy(() -> consumer.onWarehouseStockChanged(invalidJson))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error procesando time.advanced.v1");
+                .hasMessageContaining("Error procesando warehouse.stock.changed.v1");
     }
 }
