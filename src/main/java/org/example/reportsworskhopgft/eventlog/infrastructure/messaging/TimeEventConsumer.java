@@ -33,4 +33,5 @@ public class TimeEventConsumer {
             throw new RuntimeException("Error procesando time.advanced.v1", e);
         }
     }
+
 }

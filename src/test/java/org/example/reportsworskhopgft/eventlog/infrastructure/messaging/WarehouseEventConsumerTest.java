@@ -2,6 +2,8 @@ package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.domain.EventType;
+import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -40,8 +42,8 @@ class WarehouseEventConsumerTest {
         consumer.onWarehouseStockChanged(validJson);
 
         verify(eventLogService, times(1)).save(
-                eq("warehouse.stock.changed.v1"),
-                eq("warehouse"),
+                eq(EventType.WAREHOUSE_STOCK_CHANGED),
+                eq(SourceService.WAREHOUSE),
                 any(String.class),
                 eq(0),
                 eq("")
