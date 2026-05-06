@@ -1,8 +1,7 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
-import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.application.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
-import org.example.reportsworskhopgft.eventlog.domain.EventLogRepository;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.junit.jupiter.api.Test;
@@ -13,13 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-class EventLogServiceTest {
+class EventLogServiceImplTest {
 
     @Test
     void shouldCreateAndSaveEventLog() {
 
         EventLogRepository repositoryMock = mock(EventLogRepository.class);
-        EventLogService service = new EventLogService(repositoryMock);
+        EventLogServiceImpl service = new EventLogServiceImpl(repositoryMock);
 
 
         service.save(

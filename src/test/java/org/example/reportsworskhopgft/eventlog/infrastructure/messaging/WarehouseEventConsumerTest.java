@@ -1,7 +1,7 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.application.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.junit.jupiter.api.Test;
@@ -21,7 +21,7 @@ import static org.mockito.Mockito.verify;
 class WarehouseEventConsumerTest {
 
     @Mock
-    private EventLogService eventLogService;
+    private EventLogServiceImpl eventLogServiceImpl;
 
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -41,7 +41,7 @@ class WarehouseEventConsumerTest {
 
         consumer.onWarehouseStockChanged(validJson);
 
-        verify(eventLogService, times(1)).save(
+        verify(eventLogServiceImpl, times(1)).save(
                 eq(EventType.WAREHOUSE_STOCK_CHANGED),
                 eq(SourceService.WAREHOUSE),
                 any(String.class),
@@ -56,6 +56,6 @@ class WarehouseEventConsumerTest {
 
         assertThatThrownBy(() -> consumer.onWarehouseStockChanged(invalidJson))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error procesando warehouse.stock.changed.v1");
+                .hasMessageContaining("Error processing warehouse.stock.changed.v1");
     }
 }

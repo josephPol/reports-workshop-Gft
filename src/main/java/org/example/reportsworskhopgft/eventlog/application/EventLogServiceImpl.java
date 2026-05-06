@@ -1,19 +1,20 @@
 package org.example.reportsworskhopgft.eventlog.application;
 
 import org.example.reportsworskhopgft.eventlog.domain.*;
+import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogRepository;
 import org.springframework.stereotype.Service;
 
 @Service
-public class EventLogService {
+public class EventLogServiceImpl {
 
-    private final EventLogRepository repository;
+    private final EventLogRepository eventLogRepository;
 
-    public EventLogService(EventLogRepository repository) {
-        this.repository = repository;
+    public EventLogServiceImpl(EventLogRepository eventLogRepository) {
+        this.eventLogRepository = eventLogRepository;
     }
 
     public void save(EventType eventType, SourceService sourceService,
-                     String payload, int simulationDay, String occurredAt) {
+                     String payload, Integer simulationDay, String occurredAt) {
         EventLog eventLog = new EventLog(
                 EventLogId.generate(),
                 eventType,
@@ -22,6 +23,6 @@ public class EventLogService {
                 simulationDay,
                 occurredAt
         );
-        repository.save(eventLog);
+        eventLogRepository.save(eventLog);
     }
 }

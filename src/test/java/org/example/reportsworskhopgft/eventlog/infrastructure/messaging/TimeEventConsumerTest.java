@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.application.EventLogServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.*;
 class TimeEventConsumerTest {
 
     @Mock
-    private EventLogService eventLogService;
+    private EventLogServiceImpl eventLogServiceImpl;
 
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();
@@ -39,7 +39,7 @@ class TimeEventConsumerTest {
 
         consumer.onTimeAdvanced(validJson);
 
-        verify(eventLogService, times(1)).save(
+        verify(eventLogServiceImpl, times(1)).save(
                 eq(EventType.TIME_ADVANCED),
                 eq(SourceService.TIME),
                 any(String.class),
@@ -54,6 +54,6 @@ class TimeEventConsumerTest {
 
         assertThatThrownBy(() -> consumer.onTimeAdvanced(invalidJson))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error procesando time.advanced.v1");
+                .hasMessageContaining("Error processing time.advanced.v1");
     }
 }
