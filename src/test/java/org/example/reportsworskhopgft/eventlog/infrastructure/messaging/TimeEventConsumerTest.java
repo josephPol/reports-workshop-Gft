@@ -2,6 +2,8 @@ package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import org.example.reportsworskhopgft.eventlog.domain.EventType;
+import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -37,8 +40,8 @@ class TimeEventConsumerTest {
         consumer.onTimeAdvanced(validJson);
 
         verify(eventLogService, times(1)).save(
-                eq("time.advanced.v1"),
-                eq("time"),
+                eq(EventType.TIME_ADVANCED),
+                eq(SourceService.TIME),
                 any(String.class),
                 eq(3),
                 eq("2024-01-01T00:00:00Z")

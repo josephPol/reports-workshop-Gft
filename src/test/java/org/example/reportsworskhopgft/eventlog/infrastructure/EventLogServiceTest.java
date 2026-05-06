@@ -3,6 +3,8 @@ package org.example.reportsworskhopgft.eventlog.infrastructure;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.domain.EventLogRepository;
+import org.example.reportsworskhopgft.eventlog.domain.EventType;
+import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -21,8 +23,8 @@ class EventLogServiceTest {
 
 
         service.save(
-                "TRUCK_REGISTERED",
-                "TRANSPORT",
+                EventType.TRUCK_REGISTERED,
+                SourceService.TRANSPORT,
                 "{\"test\":\"data\"}",
                 1,
                 "2026-05-06T10:00:00"

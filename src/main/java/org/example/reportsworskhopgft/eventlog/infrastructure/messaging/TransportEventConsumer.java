@@ -3,6 +3,8 @@ package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.reportsworskhopgft.eventlog.domain.EventType;
+import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
@@ -26,8 +28,8 @@ public class TransportEventConsumer {
 
 
             eventLogService.save(
-                    "TRUCK_REGISTERED",
-                    "TRANSPORT",
+                    EventType.TRUCK_REGISTERED,
+                    SourceService.TRANSPORT,
                     message, // Guardamos el texto JSON original entero en la base de datos
                     event.timestamp(),
                     LocalDateTime.now().toString()

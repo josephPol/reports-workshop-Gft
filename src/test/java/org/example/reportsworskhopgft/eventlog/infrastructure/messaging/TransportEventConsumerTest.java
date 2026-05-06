@@ -1,6 +1,8 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.reportsworskhopgft.eventlog.domain.EventType;
+import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,8 +50,8 @@ class TransportEventConsumerTest {
 
         // Verificamos que llamamos al método save() de tus compañeros con los parámetros exactos
         verify(eventLogService, times(1)).save(
-                eq("TRUCK_REGISTERED"), // eventType
-                eq("TRANSPORT"),        // sourceService
+                eq(EventType.TRUCK_REGISTERED), // eventType
+                eq(SourceService.TRANSPORT),        // sourceService
                 eq(jsonMessage),        // payload (le pasamos el JSON intacto)
                 eq(1),                  // simulationDay (sacado del timestamp)
                 anyString()             // occurredAt
