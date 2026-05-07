@@ -18,13 +18,11 @@ public class EventLog {
     @Column(name = "id", nullable = false)
     private EventLogId id;
 
-    @Size(max = 100)
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "event_type", nullable = false, length = 100)
     private EventType eventType;
 
-    @Size(max = 100)
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "source_service", nullable = false, length = 100)

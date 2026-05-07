@@ -7,7 +7,4 @@ public record WarehouseStockChangedMessage(
         @JsonProperty("quantity") int quantity,
         @JsonProperty("type") String type
 ) {
-    public String toPayload() {
-        return "{\"productId\":\"" + productId + "\",\"quantity\":" + quantity + ",\"type\":\"" + type + "\"}";
-    }
 }

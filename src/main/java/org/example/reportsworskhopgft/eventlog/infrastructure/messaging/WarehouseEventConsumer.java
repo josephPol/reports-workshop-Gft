@@ -17,14 +17,14 @@ public class WarehouseEventConsumer {
     private final EventLogServiceImpl eventLogService;
     private final ObjectMapper objectMapper;
 
-    @RabbitListener(queues = "warehouse-stock-changed.v1")
+    @RabbitListener(queues = "warehouse.stock.changed.v1")
     public void onWarehouseStockChanged(String message) {
         try {
             WarehouseStockChangedMessage event = objectMapper.readValue(message, WarehouseStockChangedMessage.class);
             eventLogService.save(
                     EventType.WAREHOUSE_STOCK_CHANGED,
                     SourceService.WAREHOUSE,
-                    event.toPayload(),
+                    message,
                     0,
                     ""
             );
@@ -34,7 +34,7 @@ public class WarehouseEventConsumer {
         }
     }
 
-    @RabbitListener(queues = "replenishment-requested.v1")
+    @RabbitListener(queues = "replenishment.requested.v1")
     public void onReplenishmentRequested(String message) {
         try {
             ReplenishmentRequestedMessage event = objectMapper.readValue(message, ReplenishmentRequestedMessage.class);

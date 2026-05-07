@@ -76,7 +76,7 @@ class TransportEventConsumerTest {
         consumer.onTruckPositionUpdate(validJsonMessage);
 
         verify(eventLogServiceImpl, times(1)).save(
-                eq(EventType.TRUCK_POSITION_UPDATE),
+                eq(EventType.TRUCK_POSITION_UPDATED),
                 eq(SourceService.TRANSPORT),
                 any(String.class),
                 eq(2),
