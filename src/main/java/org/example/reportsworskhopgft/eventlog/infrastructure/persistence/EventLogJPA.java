@@ -1,18 +1,20 @@
-package org.example.reportsworskhopgft.eventlog.domain;
+package org.example.reportsworskhopgft.eventlog.infrastructure.persistence;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
+import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
+import org.example.reportsworskhopgft.eventlog.domain.EventType;
+import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 
-import java.util.UUID;
-
-@AllArgsConstructor
-@NoArgsConstructor
-@Data
 @Entity
 @Table(name = "event_log")
-public class EventLog {
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+public class EventLogJPA {
 
     @EmbeddedId
     @Column(name = "id", nullable = false)
@@ -29,7 +31,7 @@ public class EventLog {
     private SourceService sourceService;
 
     @NotNull
-    @Column(name = "payload", nullable = false, length = Integer.MAX_VALUE)
+    @Column(name = "payload", nullable = false, columnDefinition = "TEXT")
     private String payload;
 
     @NotNull

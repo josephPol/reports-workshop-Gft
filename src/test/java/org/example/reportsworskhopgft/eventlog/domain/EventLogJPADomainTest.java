@@ -1,12 +1,13 @@
 package org.example.reportsworskhopgft.eventlog.domain;
 
+import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class EventLogDomainTest {
+class EventLogJPADomainTest {
 
     @Test
     void shouldGenerateAnIdentifier() {
@@ -24,7 +25,7 @@ class EventLogDomainTest {
 
     @Test
     void shouldExposeEventLogState() {
-        EventLog eventLog = new EventLog(
+        EventLogJPA eventLogJPA = new EventLogJPA(
                 EventLogId.generate(),
                 EventType.DELIVERY_CREATED,
                 SourceService.REPORTING,
@@ -33,12 +34,12 @@ class EventLogDomainTest {
                 "2026-05-04T12:00:00"
         );
 
-        assertNotNull(eventLog.getId());
-        assertEquals(EventType.DELIVERY_CREATED, eventLog.getEventType());
-        assertEquals(SourceService.REPORTING, eventLog.getSourceService());
-        assertEquals("{\"payload\":true}", eventLog.getPayload());
-        assertEquals(7, eventLog.getSimulationDay());
-        assertEquals("2026-05-04T12:00:00", eventLog.getOccurredAt());
+        assertNotNull(eventLogJPA.getId());
+        assertEquals(EventType.DELIVERY_CREATED, eventLogJPA.getEventType());
+        assertEquals(SourceService.REPORTING, eventLogJPA.getSourceService());
+        assertEquals("{\"payload\":true}", eventLogJPA.getPayload());
+        assertEquals(7, eventLogJPA.getSimulationDay());
+        assertEquals("2026-05-04T12:00:00", eventLogJPA.getOccurredAt());
     }
 
     @Test

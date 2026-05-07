@@ -3,7 +3,7 @@ package org.example.reportsworskhopgft.eventlog.infrastructure;
 import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
-class EventLogControllerTest {
+class EventLogJPAControllerTest {
 
     @Test
     void shouldInstantiateEmptyController() {
