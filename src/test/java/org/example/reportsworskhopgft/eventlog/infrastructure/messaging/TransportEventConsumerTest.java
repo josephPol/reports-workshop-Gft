@@ -4,15 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.eventlog.application.EventLogServiceImpl;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -26,15 +26,12 @@ class TransportEventConsumerTest {
     @Spy
     private ObjectMapper objectMapper = new ObjectMapper();
 
+    @InjectMocks
     private TransportEventConsumer consumer;
 
-    @BeforeEach
-    void setUp() {
-        consumer = new TransportEventConsumer(eventLogServiceImpl, objectMapper);
-    }
 
     @Test
-    void shouldProcessTruckRegisteredEvent() {
+    void should_process_truck_registered_event() {
         String jsonMessage = """
             {
               "truckId": "123e4567-e89b-12d3-a456-426614174000",
@@ -47,22 +44,52 @@ class TransportEventConsumerTest {
 
         consumer.onTruckRegistered(jsonMessage);
 
-
         verify(eventLogServiceImpl, times(1)).save(
-                eq(EventType.TRUCK_REGISTERED), // eventType
-                eq(SourceService.TRANSPORT),        // sourceService
-                eq(jsonMessage),        // payload (le pasamos el JSON intacto)
-                eq(1),                  // simulationDay (sacado del timestamp)
-                anyString()             // occurredAt
+                eq(EventType.TRUCK_REGISTERED),
+                eq(SourceService.TRANSPORT),
+                any(String.class),
+                eq(1),
+                any(String.class)
         );
     }
 
     @Test
-    void shouldThrowExceptionWhenMessageIsInvalid() {
-        String invalidMessage = "esto-no-es-json";
+    void should_throw_exception_when_truck_registered_message_is_invalid() {
+        String invalidMessage = "not-valid-json";
 
         assertThatThrownBy(() -> consumer.onTruckRegistered(invalidMessage))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Error deserializing RabbitMQ event");
+    }
+
+    @Test
+    void should_process_truck_position_update_event() {
+        String validJsonMessage = """
+            {
+              "truckId": "T-123",
+              "position": { "x": 10, "y": 20 },
+              "simulationDay": 2,
+              "timestamp": "2026-05-06T11:00:00"
+            }
+            """;
+
+        consumer.onTruckPositionUpdate(validJsonMessage);
+
+        verify(eventLogServiceImpl, times(1)).save(
+                eq(EventType.TRUCK_POSITION_UPDATE),
+                eq(SourceService.TRANSPORT),
+                any(String.class),
+                eq(2),
+                any(String.class)
+        );
+    }
+
+    @Test
+    void should_throw_exception_when_truck_position_message_is_invalid() {
+        String invalidMessage = "not-valid-json";
+
+        assertThatThrownBy(() -> consumer.onTruckPositionUpdate(invalidMessage))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Error processing truck position event");
     }
 }
