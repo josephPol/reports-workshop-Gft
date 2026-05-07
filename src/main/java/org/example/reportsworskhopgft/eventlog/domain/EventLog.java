@@ -9,6 +9,7 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode  //  para que assertEquals(left, right) funcione
 @Builder
 public class EventLog {
 
