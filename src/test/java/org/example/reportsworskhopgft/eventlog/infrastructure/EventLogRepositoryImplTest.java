@@ -22,21 +22,15 @@ class EventLogRepositoryImplTest {
 
     @Test
     void should_return_null_when_findAllEventsLogs_is_called() {
-        // Act
         ArrayList<EventLogJPA> result = eventLogRepository.findAllEventsLogs();
 
-        // Assert
-        // Actualmente el método devuelve null por defecto
         assertThat(result).isNull();
     }
 
     @Test
     void should_return_null_when_findEventLogById_is_called() {
-        // Act
         EventLogJPA result = eventLogRepository.findEventLogById(1);
 
-        // Assert
-        // Actualmente el método devuelve null por defecto
         assertThat(result).isNull();
     }
 }
