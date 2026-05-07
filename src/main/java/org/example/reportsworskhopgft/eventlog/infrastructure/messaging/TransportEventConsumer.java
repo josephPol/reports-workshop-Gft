@@ -39,4 +39,25 @@ public class TransportEventConsumer {
             throw new RuntimeException("Error deserializing RabbitMQ event", e);
         }
     }
+    @RabbitListener(queues = "truck.position.update.v1")
+    public void onTruckPositionUpdate(String message) {
+        try {
+
+            TruckPositionUpdateEvent event = objectMapper.readValue(message, TruckPositionUpdateEvent.class);
+
+
+            eventLogServiceImpl.save(
+                    EventType.TRUCK_POSITION_UPDATE,
+                    SourceService.TRANSPORT,
+                    message,
+                    event.simulationDay(),
+                    event.timestamp()
+            );
+
+        } catch (Exception e) {
+
+            System.err.println("Error processing truck.position.update.v1. Payload: " + message);
+            throw new RuntimeException("Error processing truck position event", e);
+        }
+    }
 }
