@@ -1,6 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 import org.example.reportsworskhopgft.eventlog.application.EventLogServiceImpl;
-import org.example.reportsworskhopgft.eventlog.domain.EventLogRepository;
+
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
