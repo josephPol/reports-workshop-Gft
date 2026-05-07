@@ -6,4 +6,5 @@ public record TimeAdvancedMessage(
         @JsonProperty("simulationDay") int simulationDay,
         @JsonProperty("occurredAt") String occurredAt
 ) {
+
 }
