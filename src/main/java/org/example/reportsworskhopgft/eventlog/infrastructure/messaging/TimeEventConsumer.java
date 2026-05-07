@@ -17,7 +17,7 @@ public class TimeEventConsumer {
     private final EventLogServiceImpl eventLogServiceImpl;
     private final ObjectMapper objectMapper;
 
-    @RabbitListener(queues = "time-advanced")
+    @RabbitListener(queues = "time-advanced.v1")
     public void onTimeAdvanced(String message) {
         try {
             TimeAdvancedMessage event = objectMapper.readValue(message, TimeAdvancedMessage.class);
