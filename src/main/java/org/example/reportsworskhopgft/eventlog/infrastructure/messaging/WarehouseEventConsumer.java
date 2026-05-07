@@ -17,7 +17,7 @@ public class WarehouseEventConsumer {
     private final EventLogServiceImpl eventLogService;
     private final ObjectMapper objectMapper;
 
-    @RabbitListener(queues = "${rabbitmq.queues.warehouse-stock-changed}")
+    @RabbitListener(queues = "warehouse-stock-changed")
     public void onWarehouseStockChanged(String message) {
         try {
             WarehouseStockChangedMessage event = objectMapper.readValue(message, WarehouseStockChangedMessage.class);
