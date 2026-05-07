@@ -6,7 +6,4 @@ public record TimeAdvancedMessage(
         @JsonProperty("simulationDay") int simulationDay,
         @JsonProperty("occurredAt") String occurredAt
 ) {
-    public String toPayload() {
-        return "{\"simulationDay\":" + simulationDay + ",\"occurredAt\":\"" + occurredAt + "\"}";
-    }
 }

@@ -17,14 +17,14 @@ public class TimeEventConsumer {
     private final EventLogServiceImpl eventLogServiceImpl;
     private final ObjectMapper objectMapper;
 
-    @RabbitListener(queues = "time-advanced.v1")
+    @RabbitListener(queues = "time.advanced.v1")
     public void onTimeAdvanced(String message) {
         try {
             TimeAdvancedMessage event = objectMapper.readValue(message, TimeAdvancedMessage.class);
             eventLogServiceImpl.save(
                     EventType.TIME_ADVANCED,
                     SourceService.TIME,
-                    event.toPayload(),
+                    message,
                     event.simulationDay(),
                     event.occurredAt()
             );
