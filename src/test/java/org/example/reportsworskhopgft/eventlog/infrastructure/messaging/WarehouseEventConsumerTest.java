@@ -1,7 +1,7 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.example.reportsworskhopgft.eventlog.application.EventLogServiceImpl;
+import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.junit.jupiter.api.Test;
@@ -56,7 +56,7 @@ class WarehouseEventConsumerTest {
 
         assertThatThrownBy(() -> consumer.onWarehouseStockChanged(invalidJson))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error procesando warehouse.stock.changed.v1");
+                .hasMessageContaining("Error processing warehouse.stock.changed.v1");
     }
 
     @Test
@@ -86,6 +86,6 @@ class WarehouseEventConsumerTest {
 
         assertThatThrownBy(() -> consumer.onReplenishmentRequested(invalidJson))
                 .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error procesando replenishment.requested.v1");
+                .hasMessageContaining("Error processing replenishment.requested.v1");
     }
 }

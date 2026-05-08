@@ -28,7 +28,7 @@ public class BlockedOrder {
 
     @NotNull
     @Column(name = "reason", nullable = false, length = Integer.MAX_VALUE)
-    private String reason; 
+    private String reason;
 
     @NotNull
     @Column(name = "blocked_since_day", nullable = false)

@@ -7,7 +7,9 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class BlockedOrderServiceTest {
 
     @Test
-    void shouldCreateApplicationServiceInstance() {
-        assertNotNull(new BlockedOrderService());
+    void should_instantiate_service() {
+        BlockedOrderService service = new BlockedOrderService();
+        assertNotNull(service);
     }
 }
+
