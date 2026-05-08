@@ -1,26 +1,34 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
+import org.example.reportsworskhopgft.eventlog.application.EventLogRepository;
+import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.web.servlet.MockMvc;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import java.util.List;
 
-@WebMvcTest(EventLogController.class)
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
 class EventLogControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+    @Mock
+    private EventLogRepository eventLogRepository;
+
+    @InjectMocks
+    private EventLogController controller;
 
     @Test
-    void should_load_controller_context() {
-     try {
-            mockMvc.perform(get("/any-endpoint"))
-                    .andExpect(status().isNotFound());
-        } catch (Exception e) {
-            throw new RuntimeException("Error al probar el contexto del controlador", e);
-        }
+    void shouldReturnAllEvents() {
+        List<EventLogJPA> events = List.of();
+        when(eventLogRepository.findAllEventsLogs()).thenReturn(events);
+
+        List<EventLogJPA> response = controller.getAllEventLogs();
+
+        assertEquals(events, response);
     }
 }

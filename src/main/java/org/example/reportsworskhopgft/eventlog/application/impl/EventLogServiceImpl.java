@@ -1,11 +1,14 @@
 package org.example.reportsworskhopgft.eventlog.application.impl;
 
+import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogRepositoryJPA;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class EventLogServiceImpl {
@@ -26,5 +29,9 @@ public class EventLogServiceImpl {
                 simulationDay,
                 occurredAt);
         eventLogRepositoryJPA.save(eventLogJPA);
+    }
+
+    public List<EventLogJPA> findAll() {
+        return eventLogRepositoryJPA.findAll();
     }
 }
