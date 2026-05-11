@@ -1,9 +1,9 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -33,14 +33,14 @@ class TransportEventConsumerTest {
     @Test
     void should_process_truck_registered_event() {
         String jsonMessage = """
-            {
-              "truckId": "123e4567-e89b-12d3-a456-426614174000",
-              "name": "Camión Alpha",
-              "position": { "x": 10, "y": 20 },
-              "capacity": 50,
-              "timestamp": 1
-            }
-            """;
+                {
+                  "truckId": "123e4567-e89b-12d3-a456-426614174000",
+                  "name": "Camión Alpha",
+                  "position": { "x": 10, "y": 20 },
+                  "capacity": 50,
+                  "timestamp": 1
+                }
+                """;
 
         consumer.onTruckRegistered(jsonMessage);
 
@@ -65,13 +65,13 @@ class TransportEventConsumerTest {
     @Test
     void should_process_truck_position_update_event() {
         String validJsonMessage = """
-            {
-              "truckId": "T-123",
-              "position": { "x": 10, "y": 20 },
-              "simulationDay": 2,
-              "timestamp": "2026-05-06T11:00:00"
-            }
-            """;
+                {
+                  "truckId": "T-123",
+                  "position": { "x": 10, "y": 20 },
+                  "simulationDay": 2,
+                  "timestamp": "2026-05-06T11:00:00"
+                }
+                """;
 
         consumer.onTruckPositionUpdate(validJsonMessage);
 
@@ -89,7 +89,47 @@ class TransportEventConsumerTest {
         String invalidMessage = "not-valid-json";
 
         assertThatThrownBy(() -> consumer.onTruckPositionUpdate(invalidMessage))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("Error processing truck position event");
+                .isInstanceOf(RuntimeException.class).hasMessageContaining("Error processing truck position event");
+
+    }
+
+    @Test
+    void shouldProcessTruckStatusChangedEventAndSaveLog() throws Exception {
+
+        String validJsonMessage = """
+                {
+                  "truckId": "T-456",
+                  "status": "ON_ROUTE",
+                  "simulationDay": 3,
+                  "timestamp": "2026-05-11T10:04:33"
+                }
+                """;
+
+
+        consumer.onTruckStatusChanged(validJsonMessage);
+
+        org.mockito.Mockito.verify(eventLogServiceImpl).save(
+                org.mockito.ArgumentMatchers.eq(EventType.TRUCK_STATUS_CHANGED),
+                org.mockito.ArgumentMatchers.eq(SourceService.TRANSPORT),
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.eq(3),
+                org.mockito.ArgumentMatchers.eq("2026-05-11T10:04:33")
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenStatusMessageIsInvalid() {
+
+        String invalidMessage = "not-valid-json";
+
+        RuntimeException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> consumer.onTruckStatusChanged(invalidMessage)
+        );
+
+
+        org.junit.jupiter.api.Assertions.assertTrue(
+                exception.getMessage().contains("Error processing truck status event")
+        );
     }
 }

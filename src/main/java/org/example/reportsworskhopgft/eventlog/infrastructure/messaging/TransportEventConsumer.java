@@ -41,8 +41,29 @@ public class TransportEventConsumer {
 
         } catch (Exception e) {
 
-            System.err.println("Error processing truck.position.update.v1. Payload: " + message);
+            log.error("Error processing truck.position.update.v1. Payload: {}",message, e);
             throw new RuntimeException("Error processing truck position event", e);
+        }
+    }
+    @RabbitListener(queues = "truck.status.changed.v1")
+    public void onTruckStatusChanged(String message) {
+        try {
+
+            TruckStatusChangedEvent event = objectMapper.readValue(message, TruckStatusChangedEvent.class);
+
+
+            eventLogServiceImpl.save(
+                    EventType.TRUCK_STATUS_CHANGED,
+                    SourceService.TRANSPORT,
+                    objectMapper.writeValueAsString(event),
+                    event.simulationDay(),
+                    event.timestamp()
+            );
+
+        } catch (Exception e) {
+
+            log.error("Error processing truck.status.changed.v1. Payload: {}", message, e);
+            throw new RuntimeException("Error processing truck status event", e);
         }
     }
 }

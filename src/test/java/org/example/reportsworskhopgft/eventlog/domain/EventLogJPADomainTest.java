@@ -3,9 +3,7 @@ package org.example.reportsworskhopgft.eventlog.domain;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 
 class EventLogJPADomainTest {
 
