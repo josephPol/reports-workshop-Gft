@@ -1,9 +1,9 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
-import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 
-import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
+import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
+import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -11,9 +11,7 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 class EventLogJPAServiceImplTest {
 
