@@ -7,9 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 class BlockedOrderControllerTest {
 
     @Test
-    void should_instantiate_controller() {
-        BlockedOrderController controller = new BlockedOrderController();
-        assertNotNull(controller);
+    void should_instantiate_blocked_order_controller() {
+        assertNotNull(new BlockedOrderController());
     }
 }
-
