@@ -4,9 +4,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 

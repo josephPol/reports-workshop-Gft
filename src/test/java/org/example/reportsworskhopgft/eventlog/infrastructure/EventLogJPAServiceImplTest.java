@@ -1,9 +1,12 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
+import org.example.reportsworskhopgft.eventlog.domain.EventLog;
+import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
+import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogIdJPA;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -42,15 +45,30 @@ class EventLogJPAServiceImplTest {
     }
 
     @Test
-    void should_return_all_events_when_findAll_is_called() {
+    void should_return_all_events_when_findAllEventsLogs_is_called() {
         EventLogRepositoryJPA repositoryMock = mock(EventLogRepositoryJPA.class);
         EventLogServiceImpl service = new EventLogServiceImpl(repositoryMock);
 
-        List<EventLogJPA> expected = List.of(new EventLogJPA());
-        when(repositoryMock.findAll()).thenReturn(expected);
+        EventLogIdJPA id = new EventLogIdJPA("id-1");
+        EventLogJPA jpa = new EventLogJPA(
+                id,
+                EventType.TIME_ADVANCED,
+                SourceService.TIME,
+                "{\"ok\":true}",
+                3,
+                "2026-05-11T12:00:00"
+        );
+        when(repositoryMock.findAll()).thenReturn(List.of(jpa));
 
-        List<EventLogJPA> result = service.findAll();
+        List<EventLog> result = service.findAllEventsLogs();
 
-        assertEquals(expected, result);
+        assertEquals(1, result.size());
+        EventLog mapped = result.get(0);
+        assertEquals(new EventLogId("id-1"), mapped.getId());
+        assertEquals(EventType.TIME_ADVANCED, mapped.getEventType());
+        assertEquals(SourceService.TIME, mapped.getSourceService());
+        assertEquals("{\"ok\":true}", mapped.getPayload());
+        assertEquals(3, mapped.getSimulationDay());
+        assertEquals("2026-05-11T12:00:00", mapped.getOccurredAt());
     }
 }
