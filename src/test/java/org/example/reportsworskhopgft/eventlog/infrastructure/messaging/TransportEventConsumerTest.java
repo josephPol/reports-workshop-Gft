@@ -172,4 +172,52 @@ class TransportEventConsumerTest {
                 exception.getMessage().contains("Error processing delivery created event")
         );
     }
+    @Test
+    void shouldProcessDeliveryCompletedEventAndSaveTwoLogs() throws Exception {
+        // Arrange
+        String validJsonMessage = """
+                {
+                  "deliveryId": "DEL-999",
+                  "truckId": "T-123",
+                  "simulationDay": 5,
+                  "timestamp": "2026-05-13T10:00:00"
+                }
+                """;
+
+
+        consumer.onDeliveryCompleted(validJsonMessage);
+
+        org.mockito.Mockito.verify(eventLogServiceImpl).save(
+                org.mockito.ArgumentMatchers.eq(EventType.DELIVERY_COMPLETED),
+                org.mockito.ArgumentMatchers.eq(SourceService.TRANSPORT),
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.eq(5),
+                org.mockito.ArgumentMatchers.eq("2026-05-13T10:00:00")
+        );
+
+
+        org.mockito.Mockito.verify(eventLogServiceImpl).save(
+                org.mockito.ArgumentMatchers.eq(EventType.TRUCK_STATUS_CHANGED),
+                org.mockito.ArgumentMatchers.eq(SourceService.TRANSPORT),
+                org.mockito.ArgumentMatchers.anyString(),
+                org.mockito.ArgumentMatchers.eq(5),
+                org.mockito.ArgumentMatchers.eq("2026-05-13T10:00:00")
+        );
+    }
+
+    @Test
+    void shouldThrowExceptionWhenDeliveryCompletedMessageIsInvalid() {
+
+        String invalidMessage = "not-valid-json";
+
+
+        RuntimeException exception = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> consumer.onDeliveryCompleted(invalidMessage)
+        );
+
+        org.junit.jupiter.api.Assertions.assertTrue(
+                exception.getMessage().contains("Error processing delivery completed event")
+        );
+    }
 }
