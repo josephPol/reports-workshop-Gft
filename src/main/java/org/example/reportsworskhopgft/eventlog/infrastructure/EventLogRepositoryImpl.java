@@ -1,5 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
+import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.application.EventLogRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +10,9 @@ import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventL
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class EventLogRepositoryImpl implements EventLogRepository {
@@ -18,12 +21,14 @@ public class EventLogRepositoryImpl implements EventLogRepository {
 
     @Override
     public List<EventLogJPA> findAllEventsLogs() {
-        return List.of();
+        log.info("Events found:" + jpa.findAll().size());
+        return jpa.findAll();
     }
 
     @Override
-    public EventLogJPA findEventLogById(Integer id) {
-        return null;
+    public EventLogJPA findEventLogById(EventLogId id) {
+        Optional<EventLogJPA>eventLogJPAOptional = jpa.findById(id);
+        return eventLogJPAOptional.orElse(null);
     }
 
     @Override

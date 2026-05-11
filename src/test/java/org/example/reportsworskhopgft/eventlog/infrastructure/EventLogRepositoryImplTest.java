@@ -1,6 +1,7 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
+import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
@@ -35,7 +36,9 @@ class EventLogRepositoryImplTest {
 
     @Test
     void should_return_null_when_findEventLogById_is_called() {
-        EventLogJPA result = eventLogRepository.findEventLogById(1);
+        EventLogId nonExistentId = new EventLogId("non-existent-uuid");
+
+        EventLogJPA result = eventLogRepository.findEventLogById(nonExistentId);
 
         assertThat(result).isNull();
     }
