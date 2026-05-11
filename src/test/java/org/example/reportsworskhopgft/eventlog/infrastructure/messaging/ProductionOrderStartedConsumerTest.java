@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.*;
 
-class ProductionEventConsumerTest {
+class ProductionOrderStartedConsumerTest {
 
     private EventLogServiceImpl eventLogService;
     private ProductionEventConsumer consumer;
@@ -23,35 +23,33 @@ class ProductionEventConsumerTest {
     }
 
     @Test
-    void should_save_event_log_when_production_order_created_message_is_received() {
+    void should_save_event_log_when_production_order_started_message_is_received() {
         String message = """
                 {
-                  "orderId":      "order-1",
-                  "factoryId":    "factory-1",
-                  "productId":    "product-1",
-                  "quantity":     3,
-                  "simulationDay": 5,
-                  "occurredAt":   "2026-05-06T10:00:00"
+                  "orderId":       "order-1",
+                  "factoryId":     "factory-1",
+                  "simulationDay": 6,
+                  "occurredAt":    "2026-05-06T11:00:00"
                 }
                 """;
 
-        consumer.onProductionOrderCreated(message);
+        consumer.onProductionOrderStarted(message);
 
         verify(eventLogService).save(
-                EventType.PRODUCTION_ORDER_CREATED,
+                EventType.PRODUCTION_ORDER_STARTED,
                 SourceService.FACTORY,
                 message,
-                5,
-                "2026-05-06T10:00:00"
+                6,
+                "2026-05-06T11:00:00"
         );
     }
 
     @Test
-    void should_throw_runtime_exception_when_created_message_is_malformed() {
+    void should_throw_runtime_exception_when_started_message_is_malformed() {
         String malformedMessage = "{ this is not valid json }";
 
         assertThrows(RuntimeException.class,
-                () -> consumer.onProductionOrderCreated(malformedMessage));
+                () -> consumer.onProductionOrderStarted(malformedMessage));
 
         verifyNoInteractions(eventLogService);
     }
