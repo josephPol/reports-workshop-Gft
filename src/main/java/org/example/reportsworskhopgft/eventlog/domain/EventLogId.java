@@ -3,7 +3,7 @@ package org.example.reportsworskhopgft.eventlog.domain;
 import jakarta.persistence.Embeddable;
 
 @Embeddable
-    public record EventLogId(@jakarta.persistence.Column(name = "id") String value) {
+    public record EventLogId(String value) {
 
         public EventLogId {
             if (value == null || value.isBlank()) {
@@ -16,4 +16,8 @@ import jakarta.persistence.Embeddable;
         }
 
         public java.util.UUID toUUID() {return java.util.UUID.fromString(this.value);}
+
+    public String getValue() {
+            return this.value;
     }
+}

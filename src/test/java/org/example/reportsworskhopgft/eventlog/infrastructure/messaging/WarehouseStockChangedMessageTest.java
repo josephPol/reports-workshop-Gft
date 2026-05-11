@@ -1,5 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.warehouse.WarehouseStockChangedMessage;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

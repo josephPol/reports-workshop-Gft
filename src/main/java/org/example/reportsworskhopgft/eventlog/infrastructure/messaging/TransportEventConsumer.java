@@ -6,6 +6,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.TruckPositionUpdateEvent;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.TruckRegisteredEvent;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.TruckStatusChangedEvent;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 

@@ -9,11 +9,11 @@ import java.util.UUID;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode  //  para que assertEquals(left, right) funcione
+@EqualsAndHashCode
 @Builder
 public class EventLog {
 
-    private UUID id;
+    private EventLogId id;
     private EventType eventType;
     private SourceService sourceService;
     private String payload;

@@ -1,8 +1,10 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
 import org.example.reportsworskhopgft.eventlog.application.EventLogRepository;
+import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
-import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
+import org.example.reportsworskhopgft.eventlog.domain.EventType;
+import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -25,10 +27,10 @@ class EventLogControllerTest {
 
     @Test
     void shouldReturnAllEvents() {
-        List<EventLogJPA> events = List.of();
+        List<EventLog> events = List.of(new EventLog());
         when(eventLogRepository.findAllEventsLogs()).thenReturn(events);
 
-        List<EventLogJPA> response = controller.getAllEventLogs();
+        List<EventLog> response = controller.getAllEventLogs();
 
         assertEquals(events, response);
     }
@@ -36,10 +38,17 @@ class EventLogControllerTest {
     @Test
     void shouldReturnEventById() {
         EventLogId id = EventLogId.generate();
-        EventLogJPA expected = new EventLogJPA();
+        EventLog expected = EventLog.builder()
+                .id(id)
+                .eventType(EventType.TRUCK_REGISTERED)
+                .sourceService(SourceService.TRANSPORT)
+                .payload("{\"ok\":true}")
+                .simulationDay(1)
+                .occurredAt("2026-05-11T11:00:00")
+                .build();
         when(eventLogRepository.findEventLogById(id)).thenReturn(expected);
 
-        EventLogJPA response = controller.getEventLogById(id);
+        EventLog response = controller.getEventLogById(id);
 
         assertEquals(expected, response);
     }

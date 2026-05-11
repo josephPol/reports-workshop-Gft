@@ -2,8 +2,6 @@ package org.example.reportsworskhopgft.eventlog.domain;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.UUID;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
@@ -11,7 +9,7 @@ class EventLogTest {
 
     @Test
     void shouldCompareEntitiesByValue() {
-        UUID id = UUID.randomUUID();
+        EventLogId id = EventLogId.generate();
         EventLog left = EventLog.builder()
                 .id(id)
                 .eventType(EventType.TRUCK_REGISTERED)
