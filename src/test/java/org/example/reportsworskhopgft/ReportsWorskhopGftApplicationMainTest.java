@@ -1,9 +1,10 @@
 package org.example.reportsworskhopgft;
 
+import org.example.reportsworskhopgft.blockedorder.infrastructure.BlockedOrderRepositoryJPA;
 import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogRepositoryJPA;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(
         webEnvironment = SpringBootTest.WebEnvironment.NONE,
@@ -21,8 +22,11 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 )
 class ReportsWorskhopGftApplicationMainTest {
 
-    @MockBean
+    @MockitoBean
     private EventLogRepositoryJPA eventLogRepositoryJPA;
+
+    @MockitoBean
+    private BlockedOrderRepositoryJPA blockedOrderRepositoryJPA;
 
     @Test
     void main_should_run() {

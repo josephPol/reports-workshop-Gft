@@ -1,5 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
+import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
@@ -21,13 +22,13 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class EventLogRepositoryImplTest {
+class EventLogServiceImplTest {
 
     @Mock
     private EventLogRepositoryJPA eventLogRepositoryJPA;
 
     @InjectMocks
-    private EventLogRepositoryImpl eventLogRepository;
+    private EventLogServiceImpl eventLogRepository;
 
     @Test
     void should_return_empty_list_when_findAllEventsLogs_is_called() {

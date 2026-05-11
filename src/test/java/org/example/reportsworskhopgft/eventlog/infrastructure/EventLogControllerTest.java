@@ -1,6 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
-import org.example.reportsworskhopgft.eventlog.application.EventLogRepository;
+import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.when;
 class EventLogControllerTest {
 
     @Mock
-    private EventLogRepository eventLogRepository;
+    private EventLogService eventLogService;
 
     @InjectMocks
     private EventLogController controller;
@@ -28,7 +28,7 @@ class EventLogControllerTest {
     @Test
     void shouldReturnAllEvents() {
         List<EventLog> events = List.of(new EventLog());
-        when(eventLogRepository.findAllEventsLogs()).thenReturn(events);
+        when(eventLogService.findAllEventsLogs()).thenReturn(events);
 
         List<EventLog> response = controller.getAllEventLogs();
 
@@ -46,7 +46,7 @@ class EventLogControllerTest {
                 .simulationDay(1)
                 .occurredAt("2026-05-11T11:00:00")
                 .build();
-        when(eventLogRepository.findEventLogById(id)).thenReturn(expected);
+        when(eventLogService.findEventLogById(id)).thenReturn(expected);
 
         EventLog response = controller.getEventLogById(id);
 
