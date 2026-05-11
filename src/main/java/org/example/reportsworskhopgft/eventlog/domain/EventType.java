@@ -3,6 +3,7 @@ package org.example.reportsworskhopgft.eventlog.domain;
 public enum EventType {
     TIME_ADVANCED,
     DELIVERY_CREATED,
+    DELIVERY_COMPLETED,
     TRUCK_REGISTERED,
     TRUCK_STATUS_CHANGED,
     TRUCK_POSITION_UPDATED,
