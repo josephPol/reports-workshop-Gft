@@ -3,6 +3,8 @@ package org.example.reportsworskhopgft.eventlog.domain;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.junit.jupiter.api.Test;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 class EventLogJPADomainTest {
@@ -19,6 +21,21 @@ class EventLogJPADomainTest {
     void shouldRejectBlankIdentifierValues() {
         assertThrows(IllegalArgumentException.class, () -> new EventLogId(" "));
         assertThrows(IllegalArgumentException.class, () -> new EventLogId(null));
+    }
+
+    @Test
+    void should_convert_identifier_to_uuid() {
+        UUID uuid = UUID.randomUUID();
+        EventLogId id = new EventLogId(uuid.toString());
+
+        assertEquals(uuid, id.toUUID());
+    }
+
+    @Test
+    void should_throw_when_identifier_is_not_a_uuid() {
+        EventLogId id = new EventLogId("not-a-uuid");
+
+        assertThrows(IllegalArgumentException.class, id::toUUID);
     }
 
     @Test
@@ -45,6 +62,6 @@ class EventLogJPADomainTest {
         assertEquals(EventType.TIME_ADVANCED, EventType.valueOf("TIME_ADVANCED"));
         assertEquals(EventType.WAREHOUSE_STOCK_CHANGED, EventType.values()[EventType.values().length - 1]);
         assertEquals(SourceService.FACTORY, SourceService.valueOf("FACTORY"));
-        assertEquals(SourceService.REPORTING, SourceService.values()[SourceService.values().length - 1]);
+        assertEquals(SourceService.DELIVERY, SourceService.values()[SourceService.values().length - 1]);
     }
 }

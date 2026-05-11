@@ -1,6 +1,7 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
 import org.example.reportsworskhopgft.eventlog.application.EventLogRepository;
+import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -30,5 +31,16 @@ class EventLogControllerTest {
         List<EventLogJPA> response = controller.getAllEventLogs();
 
         assertEquals(events, response);
+    }
+
+    @Test
+    void shouldReturnEventById() {
+        EventLogId id = EventLogId.generate();
+        EventLogJPA expected = new EventLogJPA();
+        when(eventLogRepository.findEventLogById(id)).thenReturn(expected);
+
+        EventLogJPA response = controller.getEventLogById(id);
+
+        assertEquals(expected, response);
     }
 }

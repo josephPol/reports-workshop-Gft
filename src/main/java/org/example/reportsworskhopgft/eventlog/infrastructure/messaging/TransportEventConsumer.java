@@ -66,4 +66,59 @@ public class TransportEventConsumer {
             throw new RuntimeException("Error processing truck status event", e);
         }
     }
+    @RabbitListener(queues = "delivery.created.v1")
+    public void onDeliveryCreated(String message) {
+        try {
+
+            DeliveryCreatedEvent event = objectMapper.readValue(message, DeliveryCreatedEvent.class);
+
+
+            eventLogServiceImpl.save(
+                    EventType.DELIVERY_CREATED,
+                    SourceService.TRANSPORT,
+                    objectMapper.writeValueAsString(event),
+                    event.simulationDay(),
+                    event.timestamp()
+            );
+
+        } catch (Exception e) {
+
+            log.error("Error processing delivery.created.v1. Payload: {}", message, e);
+            throw new RuntimeException("Error processing delivery created event", e);
+        }
+    }
+    @RabbitListener(queues = "delivery.completed.v1")
+    public void onDeliveryCompleted(String message) {
+        try {
+            DeliveryCompletedEvent event = objectMapper.readValue(message, DeliveryCompletedEvent.class);
+
+            eventLogServiceImpl.save(
+                    EventType.DELIVERY_COMPLETED,
+                    SourceService.TRANSPORT,
+                    objectMapper.writeValueAsString(event),
+                    event.simulationDay(),
+                    event.timestamp()
+            );
+
+
+            TruckStatusChangedEvent statusEvent = new TruckStatusChangedEvent(
+                    event.truckId(),
+                    "AVAILABLE",
+                    event.simulationDay(),
+                    event.timestamp()
+            );
+
+            eventLogServiceImpl.save(
+                    EventType.TRUCK_STATUS_CHANGED,
+                    SourceService.TRANSPORT,
+                    objectMapper.writeValueAsString(statusEvent),
+                    event.simulationDay(),
+                    event.timestamp()
+            );
+
+        } catch (Exception e) {
+            log.error("Error processing delivery.completed.v1. Payload: {}", message, e);
+            throw new RuntimeException("Error processing delivery completed event", e);
+        }
+    }
 }

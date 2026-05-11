@@ -26,12 +26,12 @@ class ProductionEventConsumerTest {
     void should_save_event_log_when_production_order_created_message_is_received() {
         String message = """
                 {
-                  "orderId":       "order-1",
-                  "factoryId":     "factory-1",
-                  "productId":     "product-1",
-                  "quantity":      3,
+                  "orderId":      "order-1",
+                  "factoryId":    "factory-1",
+                  "productId":    "product-1",
+                  "quantity":     3,
                   "simulationDay": 5,
-                  "occurredAt":    "2026-05-06T10:00:00"
+                  "occurredAt":   "2026-05-06T10:00:00"
                 }
                 """;
 
