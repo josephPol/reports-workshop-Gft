@@ -7,7 +7,7 @@ import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventL
 import java.util.List;
 
 public interface EventLogRepository {
-    List<EventLogJPA> findAllEventsLogs();
-    EventLogJPA findEventLogById(EventLogId id);
+    List<EventLog> findAllEventsLogs();
+    EventLog findEventLogById(EventLogId id);
     void save(EventLog eventLog);
 }

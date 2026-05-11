@@ -1,6 +1,7 @@
 package org.example.reportsworskhopgft.eventlog.domain;
 
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
+import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogIdJPA;
 import org.junit.jupiter.api.Test;
 
 import java.util.UUID;
@@ -24,6 +25,12 @@ class EventLogJPADomainTest {
     }
 
     @Test
+    void should_expose_value_via_getValue() {
+        EventLogId id = new EventLogId("abc");
+        assertEquals("abc", id.getValue());
+    }
+
+    @Test
     void should_convert_identifier_to_uuid() {
         UUID uuid = UUID.randomUUID();
         EventLogId id = new EventLogId(uuid.toString());
@@ -40,8 +47,9 @@ class EventLogJPADomainTest {
 
     @Test
     void shouldExposeEventLogState() {
+        EventLogIdJPA id = new EventLogIdJPA(UUID.randomUUID().toString());
         EventLogJPA eventLogJPA = new EventLogJPA(
-                EventLogId.generate(),
+                id,
                 EventType.DELIVERY_CREATED,
                 SourceService.REPORTING,
                 "{\"payload\":true}",
@@ -50,6 +58,7 @@ class EventLogJPADomainTest {
         );
 
         assertNotNull(eventLogJPA.getId());
+        assertEquals(id.getValue(), eventLogJPA.getId().getValue());
         assertEquals(EventType.DELIVERY_CREATED, eventLogJPA.getEventType());
         assertEquals(SourceService.REPORTING, eventLogJPA.getSourceService());
         assertEquals("{\"payload\":true}", eventLogJPA.getPayload());

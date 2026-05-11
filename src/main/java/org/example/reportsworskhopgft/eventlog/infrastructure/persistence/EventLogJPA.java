@@ -18,7 +18,7 @@ public class EventLogJPA {
 
     @EmbeddedId
     @Column(name = "id", nullable = false)
-    private EventLogId id;
+    private EventLogIdJPA id;
 
     @NotNull
     @Enumerated(EnumType.STRING)
