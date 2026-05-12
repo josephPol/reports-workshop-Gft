@@ -3,9 +3,13 @@ package org.example.reportsworskhopgft.eventlog.infrastructure;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.application.ReportService;
+import org.example.reportsworskhopgft.eventlog.application.projections.OrderHistoryProjection;
+import org.example.reportsworskhopgft.eventlog.application.projections.SystemStatsProjection;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,5 +34,19 @@ public class EventLogController {
     @ResponseStatus(HttpStatus.OK)
     public EventLog getEventLogById(@PathVariable("reports_id") EventLogId id) {
         return eventLogService.findEventLogById(id);
+    }
+
+    private final ReportService reportService;
+
+    @GetMapping("/stats")
+    public ResponseEntity<SystemStatsProjection> getSystemStats() {
+        SystemStatsProjection stats = reportService.getSystemStats();
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/orders/history")
+    public ResponseEntity<List<OrderHistoryProjection>> getOrderHistory() {
+        List<OrderHistoryProjection> history = reportService.getOrderHistory();
+        return ResponseEntity.ok(history);
     }
 }
