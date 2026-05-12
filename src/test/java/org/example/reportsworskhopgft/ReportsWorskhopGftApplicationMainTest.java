@@ -3,6 +3,7 @@ package org.example.reportsworskhopgft;
 import org.example.reportsworskhopgft.blockedorder.infrastructure.BlockedOrderRepositoryJPA;
 import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogRepositoryJPA;
 import org.junit.jupiter.api.Test;
+import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
@@ -27,6 +28,9 @@ class ReportsWorskhopGftApplicationMainTest {
 
     @MockitoBean
     private BlockedOrderRepositoryJPA blockedOrderRepositoryJPA;
+
+    @MockitoBean
+    private ConnectionFactory connectionFactory;
 
     @Test
     void main_should_run() {
