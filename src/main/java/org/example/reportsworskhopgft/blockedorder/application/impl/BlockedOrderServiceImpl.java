@@ -1,7 +1,8 @@
-package org.example.reportsworskhopgft.blockedorder.infrastructure;
+package org.example.reportsworskhopgft.blockedorder.application.impl;
 
 import org.example.reportsworskhopgft.blockedorder.application.BlockedOrderService;
 import org.example.reportsworskhopgft.blockedorder.domain.BlockedOrder;
+import org.example.reportsworskhopgft.blockedorder.infrastructure.BlockedOrderRepositoryJPA;
 import org.example.reportsworskhopgft.blockedorder.infrastructure.persistence.BlockedOrderJPA;
 import org.springframework.stereotype.Service;
 

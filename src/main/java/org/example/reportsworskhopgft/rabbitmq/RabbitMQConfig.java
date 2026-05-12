@@ -11,10 +11,10 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 @Configuration
 public class RabbitMQConfig {
 
-    public static final String TIME_EXCHANGE        = "reports.time.exchange";
-    public static final String TRANSPORT_EXCHANGE   = "reports.transport.exchange";
-    public static final String PRODUCTION_EXCHANGE  = "reports.production.exchange";
-    public static final String WAREHOUSE_EXCHANGE   = "reports.warehouse.exchange";
+    public static final String TIME_EXCHANGE        = "ms-time.exchange";
+    public static final String TRANSPORT_EXCHANGE   = "trucks.exchange";
+    public static final String PRODUCTION_EXCHANGE  = "production.exchange";
+    public static final String WAREHOUSE_EXCHANGE   = "warehouses.exchange";
 
     //RabbitMQ from Time/Map (1 Event)
     public static final String TIME_ADVANCED_ROUTING_KEY = "time.advanced.v1";
@@ -67,22 +67,33 @@ public class RabbitMQConfig {
 
     @Bean
     public TopicExchange timeExchange() {
-        return new TopicExchange(TIME_EXCHANGE, true, false);
+        TopicExchange exchange = new TopicExchange(TIME_EXCHANGE);
+        exchange.setShouldDeclare(false);
+        return exchange;
     }
 
     @Bean
     public TopicExchange transportExchange() {
-        return new TopicExchange(TRANSPORT_EXCHANGE, true, false);
+
+        TopicExchange exchange = new TopicExchange(TRANSPORT_EXCHANGE);
+        exchange.setShouldDeclare(false);
+        return exchange;
     }
 
     @Bean
     public TopicExchange productionExchange() {
-        return new TopicExchange(PRODUCTION_EXCHANGE, true, false);
+
+        TopicExchange exchange = new TopicExchange(PRODUCTION_EXCHANGE);
+        exchange.setShouldDeclare(false);
+        return exchange;
     }
 
     @Bean
     public TopicExchange warehouseExchange() {
-        return new TopicExchange(WAREHOUSE_EXCHANGE, true, false);
+
+        TopicExchange exchange = new TopicExchange(WAREHOUSE_EXCHANGE);
+        exchange.setShouldDeclare(false);
+        return exchange;
     }
 
 
