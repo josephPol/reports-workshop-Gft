@@ -1,4 +1,8 @@
 package org.example.reportsworskhopgft.eventlog.application.projections;
 
-public class OrderHistoryProjection {
-}
+public record OrderHistoryProjection(
+        String orderId,
+        String factoryId,
+        String status,
+        int simulationDay
+) {}
