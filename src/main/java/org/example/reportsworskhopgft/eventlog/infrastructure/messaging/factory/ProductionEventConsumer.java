@@ -52,4 +52,22 @@ public class ProductionEventConsumer {
             throw new RuntimeException("Error processing production.order.started.v1", e);
         }
     }
+
+    @RabbitListener(queues = "production.order.completed.v1")
+    public void onProductionOrderCompleted(String message) {
+        try {
+            ProductionOrderCompletedMessage event = objectMapper.readValue(message, ProductionOrderCompletedMessage.class);
+
+            eventLogService.save(
+                    EventType.PRODUCTION_ORDER_COMPLETED,
+                    SourceService.FACTORY,
+                    message,
+                    event.simulationDay(),
+                    event.occurredAt()
+            );
+        } catch (Exception e) {
+            log.error("Error processing production.order.completed.v1. Payload: {}", message, e);
+            throw new RuntimeException("Error processing production.order.completed.v1", e);
+        }
+    }
 }
