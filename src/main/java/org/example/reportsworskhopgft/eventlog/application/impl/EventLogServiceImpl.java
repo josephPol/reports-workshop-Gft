@@ -9,6 +9,7 @@ import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogRepository
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogIdJPA;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -36,11 +37,13 @@ public class EventLogServiceImpl implements EventLogService {
     }
 
     @Override
+    @Transactional
     public void save(EventLog eventLog) {
         EventLogJPA jpaEntity = mapToJPA(eventLog);
         jpaRepository.save(jpaEntity);
     }
 
+    @Transactional
     public void save(EventType eventType, SourceService sourceService, String payload, Integer simulationDay, String occurredAt) {
         save(EventLog.builder()
                 .id(EventLogId.generate())

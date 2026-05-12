@@ -1,13 +1,17 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 
 import java.util.UUID;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record TruckRegisteredEvent(
-        UUID truckId,
-        String name,
-        Position position,
-        int capacity,
-        int timestamp
+        @JsonProperty("truckId")   UUID truckId,
+        @JsonProperty("name")      String name,
+        @JsonProperty("position")  Position position,
+        @JsonProperty("capacity")  int capacity,
+        @JsonProperty("timestamp") int timestamp
 ) {
-    public record Position(int x, int y) {}
+    public record Position(
+            @JsonProperty("x") int x,
+            @JsonProperty("y") int y
+    ) {}
 }

@@ -1,5 +1,6 @@
 package org.example.reportsworskhopgft.blockedorder.infrastructure;
 
+import org.example.reportsworskhopgft.blockedorder.application.impl.BlockedOrderServiceImpl;
 import org.example.reportsworskhopgft.blockedorder.domain.BlockedOrder;
 import org.example.reportsworskhopgft.blockedorder.infrastructure.persistence.BlockedOrderJPA;
 import org.junit.jupiter.api.Test;

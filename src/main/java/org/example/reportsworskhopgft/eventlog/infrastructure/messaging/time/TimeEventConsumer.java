@@ -1,5 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.time;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
@@ -15,19 +16,24 @@ import org.springframework.stereotype.Component;
 public class TimeEventConsumer {
 
     private final EventLogServiceImpl eventLogServiceImpl;
+    private final ObjectMapper objectMapper;
 
     @RabbitListener(queues = RabbitMQConfig.TIME_ADVANCED_QUEUE_NAME)
     public void onTimeAdvanced(TimeAdvancedMessage event) {
         try {
+            log.info("Evento de producción recibido: {}", event);
+
+            String jsonPayload = objectMapper.writeValueAsString(event);
+
             eventLogServiceImpl.save(
                     EventType.TIME_ADVANCED,
                     SourceService.TIME,
-                    event.toString(),
+                    jsonPayload,
                     event.simulationDay(),
                     event.occurredAt()
             );
         } catch (Exception e) {
-            log.error("Error al procesar el evento de tiempo: {}", event, e);
+            log.error("Error processing time.advanced.v1: {}", event, e);
             throw new RuntimeException("Error processing time.advanced.v1", e);
         }
     }
