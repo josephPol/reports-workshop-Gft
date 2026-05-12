@@ -1,4 +1,4 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.factory;
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
