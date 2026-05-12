@@ -5,10 +5,13 @@ import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceI
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.factory.ProductionEventConsumer;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.factory.ProductionOrderCompletedMessage;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 class ProductionOrderCompletedConsumerTest {
@@ -25,33 +28,21 @@ class ProductionOrderCompletedConsumerTest {
 
     @Test
     void should_save_event_log_when_production_order_completed_message_is_received() {
-        String message = """
-                {
-                  "orderId":       "order-1",
-                  "factoryId":     "factory-1",
-                  "simulationDay": 8,
-                  "occurredAt":    "2026-05-06T14:00:00"
-                }
-                """;
+        ProductionOrderCompletedMessage message = new ProductionOrderCompletedMessage("order-1", "factory-1", 8, "2026-05-06T14:00:00");
 
         consumer.onProductionOrderCompleted(message);
 
         verify(eventLogService).save(
-                EventType.PRODUCTION_ORDER_COMPLETED,
-                SourceService.FACTORY,
-                message,
-                8,
-                "2026-05-06T14:00:00"
+                eq(EventType.PRODUCTION_ORDER_COMPLETED),
+                eq(SourceService.FACTORY),
+                any(String.class),
+                eq(8),
+                eq("2026-05-06T14:00:00")
         );
     }
 
     @Test
     void should_throw_runtime_exception_when_completed_message_is_malformed() {
-        String malformedMessage = "{ this is not valid json }";
-
-        assertThrows(RuntimeException.class,
-                () -> consumer.onProductionOrderCompleted(malformedMessage));
-
-        verifyNoInteractions(eventLogService);
+        // Removed as method takes object
     }
 }

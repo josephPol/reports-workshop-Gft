@@ -117,6 +117,15 @@ public class TransportEventConsumer {
                     event.timestamp()
             );
 
+            // Also save truck status changed to available
+            eventLogServiceImpl.save(
+                    EventType.TRUCK_STATUS_CHANGED,
+                    SourceService.TRANSPORT,
+                    jsonPayload,
+                    event.simulationDay(),
+                    event.timestamp()
+            );
+
         } catch (Exception e) {
             log.error("Error processing delivery.completed.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing delivery completed event", e);

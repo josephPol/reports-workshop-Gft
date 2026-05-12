@@ -5,5 +5,5 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record TimeAdvancedMessage(
         @JsonProperty("previousDay") int simulationDay,
-        @JsonProperty("currentDay")    int occurredAt
+        @JsonProperty("occurredAt") String occurredAt
 ) {}
