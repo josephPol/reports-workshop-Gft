@@ -56,4 +56,94 @@ class ProductionEventConsumerTest {
 
         verifyNoInteractions(eventLogService);
     }
+
+    @Test
+    void should_save_event_log_when_production_order_blocked_message_is_received() {
+        String message = """
+                {
+                  "simulationDay": 7,
+                  "occurredAt":   "2026-05-06T13:00:00"
+                }
+                """;
+
+        consumer.onProductionOrderBlocked(message);
+
+        verify(eventLogService).save(
+                EventType.PRODUCTION_ORDER_BLOCKED,
+                SourceService.FACTORY,
+                message,
+                7,
+                "2026-05-06T13:00:00"
+        );
+    }
+
+    @Test
+    void should_throw_runtime_exception_when_blocked_message_is_malformed() {
+        String malformedMessage = "{ this is not valid json }";
+
+        assertThrows(RuntimeException.class,
+                () -> consumer.onProductionOrderBlocked(malformedMessage));
+
+        verifyNoInteractions(eventLogService);
+    }
+
+    @Test
+    void should_save_event_log_when_recipe_registered_message_is_received() {
+        String message = """
+                {
+                  "simulationDay": 9,
+                  "occurredAt":   "2026-05-06T15:00:00"
+                }
+                """;
+
+        consumer.onRecipeRegistered(message);
+
+        verify(eventLogService).save(
+                EventType.PRODUCTION_RECIPE_REGISTERED,
+                SourceService.FACTORY,
+                message,
+                9,
+                "2026-05-06T15:00:00"
+        );
+    }
+
+    @Test
+    void should_throw_runtime_exception_when_recipe_registered_message_is_malformed() {
+        String malformedMessage = "{ this is not valid json }";
+
+        assertThrows(RuntimeException.class,
+                () -> consumer.onRecipeRegistered(malformedMessage));
+
+        verifyNoInteractions(eventLogService);
+    }
+
+    @Test
+    void should_save_event_log_when_factory_registered_message_is_received() {
+        String message = """
+                {
+                  "simulationDay": 10,
+                  "occurredAt":   "2026-05-06T16:00:00"
+                }
+                """;
+
+        consumer.onFactoryRegistered(message);
+
+        verify(eventLogService).save(
+                EventType.PRODUCTION_FACTORY_REGISTERED,
+                SourceService.FACTORY,
+                message,
+                10,
+                "2026-05-06T16:00:00"
+        );
+    }
+
+    @Test
+    void should_throw_runtime_exception_when_factory_registered_message_is_malformed() {
+        String malformedMessage = "{ this is not valid json }";
+
+        assertThrows(RuntimeException.class,
+                () -> consumer.onFactoryRegistered(malformedMessage));
+
+        verifyNoInteractions(eventLogService);
+    }
 }
