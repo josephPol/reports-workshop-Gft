@@ -30,7 +30,7 @@ public class TimeEventConsumer {
                     SourceService.TIME,
                     jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
+                    String.valueOf(event.occurredAt())
             );
         } catch (Exception e) {
             log.error("Error processing time.advanced.v1: {}", event, e);
