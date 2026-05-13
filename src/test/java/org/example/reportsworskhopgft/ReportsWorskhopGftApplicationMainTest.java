@@ -32,6 +32,6 @@ class ReportsWorskhopGftApplicationMainTest {
 
     @Test
     void main_should_run() {
-        // Intentionally empty: context bootstrap runs through the app's main method.
+        ReportsWorskhopGftApplication.main(new String[]{});
     }
 }
