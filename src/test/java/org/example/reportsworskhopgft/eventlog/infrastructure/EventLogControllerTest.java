@@ -2,7 +2,6 @@ package org.example.reportsworskhopgft.eventlog.infrastructure;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
-import org.example.reportsworskhopgft.eventlog.application.ReportService;
 import org.example.reportsworskhopgft.eventlog.application.projections.OrderHistoryProjection;
 import org.example.reportsworskhopgft.eventlog.application.projections.SystemStatsProjection;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
@@ -33,9 +32,6 @@ class EventLogControllerTest {
 
     @MockitoBean
     private EventLogService eventLogService;
-
-    @MockitoBean
-    private ReportService reportService;
 
     @Test
     void should_return_all_events() throws Exception {
@@ -84,7 +80,7 @@ class EventLogControllerTest {
     @Test
     void should_return_system_stats() throws Exception {
         SystemStatsProjection mockStats = new SystemStatsProjection(10, 5, 1, 3);
-        when(reportService.getSystemStats()).thenReturn(mockStats);
+        when(eventLogService.getSystemStats()).thenReturn(mockStats);
 
         mockMvc.perform(get("/reports/stats"))
                 .andExpect(status().isOk())
@@ -97,7 +93,7 @@ class EventLogControllerTest {
     @Test
     void should_return_order_history() throws Exception {
         OrderHistoryProjection history = new OrderHistoryProjection("ORD-001", "FAC-001", "COMPLETED", 2);
-        when(reportService.getOrderHistory()).thenReturn(List.of(history));
+        when(eventLogService.getOrderHistory()).thenReturn(List.of(history));
 
         mockMvc.perform(get("/reports/orders/history"))
                 .andExpect(status().isOk())
