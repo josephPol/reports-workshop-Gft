@@ -2,9 +2,7 @@ package org.example.reportsworskhopgft.eventlog.application.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.example.reportsworskhopgft.eventlog.application.projections.OrderHistoryProjection;
@@ -50,7 +48,52 @@ public class EventLogServiceImpl implements EventLogService {
 
     @Override
     public List<OrderHistoryProjection> getOrderHistory() {
-        return List.of();
+        List<EventLogJPA> allEvents = jpaRepository.findAll();
+
+        Map<String, OrderHistoryProjection> historyMap = new LinkedHashMap<>();
+
+        for (EventLogJPA log : allEvents) {
+            if (isProductionOrderEvent(log.getEventType())) {
+                try {
+                    JsonNode payload = objectMapper.readTree(log.getPayload());
+                    String orderId = payload.get("orderId").asText();
+
+                    String factoryId =
+                            payload.has("factoryId")
+                                    ? payload.get("factoryId").asText()
+                                    : (historyMap.containsKey(orderId)
+                                            ? historyMap.get(orderId).factoryId()
+                                            : "N/A");
+
+                    String status = mapEventToStatus(log.getEventType());
+
+                    historyMap.put(
+                            orderId,
+                            new OrderHistoryProjection(
+                                    orderId, factoryId, status, log.getSimulationDay()));
+                } catch (Exception e) {
+                    System.err.println("Error parsing order event: " + e.getMessage());
+                }
+            }
+        }
+        return new ArrayList<>(historyMap.values());
+    }
+
+    private boolean isProductionOrderEvent(EventType type) {
+        return type == EventType.PRODUCTION_ORDER_CREATED
+                || type == EventType.PRODUCTION_ORDER_STARTED
+                || type == EventType.PRODUCTION_ORDER_COMPLETED
+                || type == EventType.PRODUCTION_ORDER_BLOCKED;
+    }
+
+    String mapEventToStatus(EventType type) {
+        return switch (type) {
+            case PRODUCTION_ORDER_CREATED -> "CREATED";
+            case PRODUCTION_ORDER_STARTED -> "STARTED";
+            case PRODUCTION_ORDER_COMPLETED -> "COMPLETED";
+            case PRODUCTION_ORDER_BLOCKED -> "BLOCKED";
+            default -> "UNKNOWN";
+        };
     }
 
     @Override
