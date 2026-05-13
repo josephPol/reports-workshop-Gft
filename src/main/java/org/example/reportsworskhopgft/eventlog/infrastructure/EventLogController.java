@@ -24,7 +24,7 @@ public class EventLogController {
     @ResponseStatus(HttpStatus.OK)
     public List<EventLog> getAllEventLogs() {
         List<EventLog> eventLogJPAList = eventLogService.findAllEventsLogs();
-        log.info("Events found: " + eventLogJPAList.size());
+        log.info("Events found: {}", eventLogJPAList.size());
         return eventLogJPAList;
     }
 

@@ -1,5 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.rabbitmq.RabbitMQConfig;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -22,7 +24,7 @@ public class TransportEventConsumer {
     @RabbitListener(queues = RabbitMQConfig.TRUCK_REGISTERED_QUEUE_NAME)
     public void onTruckRegistered(TruckRegisteredEvent event) {
         try {
-            log.info("Evento de producción recibido: {}", event);
+            log.info("Production event received: {}", event);
 
             String jsonPayload = objectMapper.writeValueAsString(event);
 
@@ -33,16 +35,21 @@ public class TransportEventConsumer {
                     event.timestamp(),
                     LocalDateTime.now().toString());
 
-        } catch (Exception e) {
-            log.error("Error processing truck message. Payload: {}", event, e);
-            throw new RuntimeException("Error deserializing RabbitMQ event", e);
+        } catch (JsonProcessingException e) {
+            log.error("Error serializing event to JSON: {}", event, e);
+        } catch (DataAccessException e) {
+            log.error("Database error while saving log: {}", event, e);
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error processing production order: {}", event, e);
+            throw e;
         }
     }
 
     @RabbitListener(queues = RabbitMQConfig.TRUCK_POSITION_UPDATE_QUEUE_NAME)
     public void onTruckPositionUpdate(TruckPositionUpdateEvent event) {
         try {
-            log.info("Evento de producción recibido: {}", event);
+            log.info("Production event received: {}", event);
 
             String jsonPayload = objectMapper.writeValueAsString(event);
 
@@ -53,17 +60,21 @@ public class TransportEventConsumer {
                     event.simulationDay(),
                     event.timestamp());
 
-        } catch (Exception e) {
-
-            log.error("Error processing truck.position.update.v1. Payload: {}", event, e);
-            throw new RuntimeException("Error processing truck position event", e);
+        } catch (JsonProcessingException e) {
+            log.error("Error serializing event to JSON: {}", event, e);
+        } catch (DataAccessException e) {
+            log.error("Database error while saving log: {}", event, e);
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error processing production order: {}", event, e);
+            throw e;
         }
     }
 
     @RabbitListener(queues = RabbitMQConfig.TRUCK_STATUS_CHANGED_QUEUE_NAME)
     public void onTruckStatusChanged(TruckStatusChangedEvent event) {
         try {
-            log.info("Evento de producción recibido: {}", event);
+            log.info("Production event received: {}", event);
 
             String jsonPayload = objectMapper.writeValueAsString(event);
 
@@ -74,10 +85,14 @@ public class TransportEventConsumer {
                     event.simulationDay(),
                     event.timestamp());
 
-        } catch (Exception e) {
-
-            log.error("Error processing truck.status.changed.v1. Payload: {}", event, e);
-            throw new RuntimeException("Error processing truck status event", e);
+        } catch (JsonProcessingException e) {
+            log.error("Error serializing event to JSON: {}", event, e);
+        } catch (DataAccessException e) {
+            log.error("Database error while saving log: {}", event, e);
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error processing production order: {}", event, e);
+            throw e;
         }
     }
 
@@ -103,10 +118,11 @@ public class TransportEventConsumer {
     //            throw new RuntimeException("Error processing delivery created event", e);
     //        }
     //    }
+
     @RabbitListener(queues = RabbitMQConfig.DELIVERY_COMPLETED_QUEUE_NAME)
     public void onDeliveryCompleted(DeliveryCompletedEvent event) {
         try {
-            log.info("Evento de producción recibido: {}", event);
+            log.info("Production event received: {}", event);
 
             String jsonPayload = objectMapper.writeValueAsString(event);
 
@@ -125,9 +141,14 @@ public class TransportEventConsumer {
                     event.simulationDay(),
                     event.timestamp());
 
-        } catch (Exception e) {
-            log.error("Error processing delivery.completed.v1. Payload: {}", event, e);
-            throw new RuntimeException("Error processing delivery completed event", e);
+        } catch (JsonProcessingException e) {
+            log.error("Error serializing event to JSON: {}", event, e);
+        } catch (DataAccessException e) {
+            log.error("Database error while saving log: {}", event, e);
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error processing production order: {}", event, e);
+            throw e;
         }
     }
 }
