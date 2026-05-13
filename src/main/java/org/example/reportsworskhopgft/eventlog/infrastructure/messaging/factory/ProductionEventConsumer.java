@@ -30,8 +30,7 @@ public class ProductionEventConsumer {
                     SourceService.FACTORY,
                     jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
             log.error("Error processing production.order.created.v1: {}", event, e);
             throw new RuntimeException("Error processing production.order.created.v1", e);
@@ -50,8 +49,7 @@ public class ProductionEventConsumer {
                     SourceService.FACTORY,
                     jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
             log.error("Error processing production.order.started.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing production.order.started.v1", e);
@@ -70,8 +68,7 @@ public class ProductionEventConsumer {
                     SourceService.FACTORY,
                     jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
             log.error("Error processing production.order.completed.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing production.order.completed.v1", e);
@@ -90,8 +87,7 @@ public class ProductionEventConsumer {
                     SourceService.FACTORY,
                     jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
             log.error("Error processing production.order.completed.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing production.order.completed.v1", e);
@@ -110,8 +106,7 @@ public class ProductionEventConsumer {
                     SourceService.FACTORY,
                     jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
             log.error("Error processing production.order.completed.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing production.order.completed.v1", e);
@@ -130,8 +125,7 @@ public class ProductionEventConsumer {
                     SourceService.FACTORY,
                     jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
             log.error("Error processing production.order.completed.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing production.order.completed.v1", e);

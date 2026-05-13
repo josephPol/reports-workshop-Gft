@@ -1,5 +1,9 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
@@ -13,21 +17,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
 @ExtendWith(MockitoExtension.class)
 class ProductionEventConsumerTest {
 
-    @Mock
-    private EventLogServiceImpl eventLogService;
+    @Mock private EventLogServiceImpl eventLogService;
 
-    @Mock
-    private ObjectMapper objectMapper;
+    @Mock private ObjectMapper objectMapper;
 
-    @InjectMocks
-    private ProductionEventConsumer consumer;
+    @InjectMocks private ProductionEventConsumer consumer;
 
     private final String DATE = "2026-05-12T10:00:00";
     private final String JSON_PAYLOAD = "{\"status\":\"serialized\"}";
@@ -44,7 +41,13 @@ class ProductionEventConsumerTest {
 
         consumer.onProductionOrderCreated(event);
 
-        verify(eventLogService).save(EventType.PRODUCTION_ORDER_CREATED, SourceService.FACTORY, JSON_PAYLOAD, 5, DATE);
+        verify(eventLogService)
+                .save(
+                        EventType.PRODUCTION_ORDER_CREATED,
+                        SourceService.FACTORY,
+                        JSON_PAYLOAD,
+                        5,
+                        DATE);
     }
 
     @Test
@@ -54,7 +57,13 @@ class ProductionEventConsumerTest {
 
         consumer.onProductionOrderStarted(event);
 
-        verify(eventLogService).save(EventType.PRODUCTION_ORDER_STARTED, SourceService.FACTORY, JSON_PAYLOAD, 5, DATE);
+        verify(eventLogService)
+                .save(
+                        EventType.PRODUCTION_ORDER_STARTED,
+                        SourceService.FACTORY,
+                        JSON_PAYLOAD,
+                        5,
+                        DATE);
     }
 
     @Test
@@ -63,7 +72,13 @@ class ProductionEventConsumerTest {
 
         consumer.onProductionOrderCompleted(event);
 
-        verify(eventLogService).save(EventType.PRODUCTION_ORDER_COMPLETED, SourceService.FACTORY, JSON_PAYLOAD, 5, DATE);
+        verify(eventLogService)
+                .save(
+                        EventType.PRODUCTION_ORDER_COMPLETED,
+                        SourceService.FACTORY,
+                        JSON_PAYLOAD,
+                        5,
+                        DATE);
     }
 
     @Test
@@ -72,7 +87,13 @@ class ProductionEventConsumerTest {
 
         consumer.onProductionOrderBlocked(event);
 
-        verify(eventLogService).save(EventType.PRODUCTION_ORDER_BLOCKED, SourceService.FACTORY, JSON_PAYLOAD, 5, DATE);
+        verify(eventLogService)
+                .save(
+                        EventType.PRODUCTION_ORDER_BLOCKED,
+                        SourceService.FACTORY,
+                        JSON_PAYLOAD,
+                        5,
+                        DATE);
     }
 
     @Test
@@ -81,7 +102,13 @@ class ProductionEventConsumerTest {
 
         consumer.onRecipeRegistered(event);
 
-        verify(eventLogService).save(EventType.PRODUCTION_RECIPE_REGISTERED, SourceService.FACTORY, JSON_PAYLOAD, 5, DATE);
+        verify(eventLogService)
+                .save(
+                        EventType.PRODUCTION_RECIPE_REGISTERED,
+                        SourceService.FACTORY,
+                        JSON_PAYLOAD,
+                        5,
+                        DATE);
     }
 
     @Test
@@ -90,13 +117,20 @@ class ProductionEventConsumerTest {
 
         consumer.onFactoryRegistered(event);
 
-        verify(eventLogService).save(EventType.PRODUCTION_FACTORY_REGISTERED, SourceService.FACTORY, JSON_PAYLOAD, 5, DATE);
+        verify(eventLogService)
+                .save(
+                        EventType.PRODUCTION_FACTORY_REGISTERED,
+                        SourceService.FACTORY,
+                        JSON_PAYLOAD,
+                        5,
+                        DATE);
     }
 
     // --- TESTS PARA COBERTURA DE EXCEPCIONES (Bloques Catch) ---
 
     @Test
-    void should_throw_exception_when_onProductionOrderCreated_fails() throws JsonProcessingException {
+    void should_throw_exception_when_onProductionOrderCreated_fails()
+            throws JsonProcessingException {
         when(objectMapper.writeValueAsString(any())).thenThrow(new RuntimeException("JSON Error"));
         var event = new ProductionOrderCreatedMessage("O1", "F1", "P1", 10, 5, DATE);
 
@@ -104,7 +138,8 @@ class ProductionEventConsumerTest {
     }
 
     @Test
-    void should_throw_exception_when_onProductionOrderStarted_fails() throws JsonProcessingException {
+    void should_throw_exception_when_onProductionOrderStarted_fails()
+            throws JsonProcessingException {
         when(objectMapper.writeValueAsString(any())).thenThrow(new RuntimeException("JSON Error"));
         var event = new ProductionOrderStartedMessage("O1", "F1", 5, DATE);
 
@@ -112,7 +147,8 @@ class ProductionEventConsumerTest {
     }
 
     @Test
-    void should_throw_exception_when_onProductionOrderCompleted_fails() throws JsonProcessingException {
+    void should_throw_exception_when_onProductionOrderCompleted_fails()
+            throws JsonProcessingException {
         when(objectMapper.writeValueAsString(any())).thenThrow(new RuntimeException("JSON Error"));
         var event = new ProductionOrderCompletedMessage("O1", "F1", 5, DATE);
 
@@ -120,7 +156,8 @@ class ProductionEventConsumerTest {
     }
 
     @Test
-    void should_throw_exception_when_onProductionOrderBlocked_fails() throws JsonProcessingException {
+    void should_throw_exception_when_onProductionOrderBlocked_fails()
+            throws JsonProcessingException {
         when(objectMapper.writeValueAsString(any())).thenThrow(new RuntimeException("JSON Error"));
         var event = new ProductionOrderBlockedMessage(5, DATE);
 

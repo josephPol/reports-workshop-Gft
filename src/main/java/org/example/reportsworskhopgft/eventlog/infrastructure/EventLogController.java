@@ -1,5 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
@@ -11,8 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 @RequestMapping("/reports")
@@ -21,7 +20,7 @@ public class EventLogController {
 
     private final EventLogService eventLogService;
 
-    @GetMapping({"/",""})
+    @GetMapping({"/", ""})
     @ResponseStatus(HttpStatus.OK)
     public List<EventLog> getAllEventLogs() {
         List<EventLog> eventLogJPAList = eventLogService.findAllEventsLogs();

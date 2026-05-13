@@ -11,26 +11,22 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
         webEnvironment = SpringBootTest.WebEnvironment.NONE,
         useMainMethod = SpringBootTest.UseMainMethod.ALWAYS,
         args = {
-                "--spring.main.web-application-type=none",
-                "--spring.main.banner-mode=off",
-                "--spring.jmx.enabled=false",
-                "--management.endpoints.enabled-by-default=false",
-                "--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,"
-                        + "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,"
-                        + "org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,"
-                        + "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration"
-        }
-)
+            "--spring.main.web-application-type=none",
+            "--spring.main.banner-mode=off",
+            "--spring.jmx.enabled=false",
+            "--management.endpoints.enabled-by-default=false",
+            "--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,"
+                    + "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,"
+                    + "org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,"
+                    + "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration"
+        })
 class ReportsWorskhopGftApplicationMainTest {
 
-    @MockitoBean
-    private EventLogRepositoryJPA eventLogRepositoryJPA;
+    @MockitoBean private EventLogRepositoryJPA eventLogRepositoryJPA;
 
-    @MockitoBean
-    private BlockedOrderRepositoryJPA blockedOrderRepositoryJPA;
+    @MockitoBean private BlockedOrderRepositoryJPA blockedOrderRepositoryJPA;
 
-    @MockitoBean
-    private ConnectionFactory connectionFactory;
+    @MockitoBean private ConnectionFactory connectionFactory;
 
     @Test
     void main_should_run() {

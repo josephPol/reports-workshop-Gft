@@ -1,14 +1,13 @@
 package org.example.reportsworskhopgft.blockedorder.application.impl;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import org.example.reportsworskhopgft.blockedorder.application.BlockedOrderService;
 import org.example.reportsworskhopgft.blockedorder.domain.BlockedOrder;
 import org.example.reportsworskhopgft.blockedorder.infrastructure.BlockedOrderRepositoryJPA;
 import org.example.reportsworskhopgft.blockedorder.infrastructure.persistence.BlockedOrderJPA;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class BlockedOrderServiceImpl implements BlockedOrderService {
@@ -34,11 +33,6 @@ public class BlockedOrderServiceImpl implements BlockedOrderService {
 
     private BlockedOrder toDomain(BlockedOrderJPA jpa) {
         return new BlockedOrder(
-                jpa.getOrderId(),
-                jpa.getFactoryId(),
-                jpa.getReason(),
-                jpa.getBlockedSinceDay()
-        );
+                jpa.getOrderId(), jpa.getFactoryId(), jpa.getReason(), jpa.getBlockedSinceDay());
     }
 }
-

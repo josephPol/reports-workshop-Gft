@@ -20,14 +20,10 @@ public class WarehouseEventConsumer {
     @RabbitListener(queues = "warehouse.stock.changed.v1")
     public void onWarehouseStockChanged(String message) {
         try {
-            WarehouseStockChangedMessage event = objectMapper.readValue(message, WarehouseStockChangedMessage.class);
+            WarehouseStockChangedMessage event =
+                    objectMapper.readValue(message, WarehouseStockChangedMessage.class);
             eventLogService.save(
-                    EventType.WAREHOUSE_STOCK_CHANGED,
-                    SourceService.WAREHOUSE,
-                    message,
-                    0,
-                    ""
-            );
+                    EventType.WAREHOUSE_STOCK_CHANGED, SourceService.WAREHOUSE, message, 0, "");
         } catch (Exception e) {
             log.error("Error processing warehouse.stock.changed.v1. Payload: {}", message, e);
             throw new RuntimeException("Error processing warehouse.stock.changed.v1", e);
@@ -37,14 +33,14 @@ public class WarehouseEventConsumer {
     @RabbitListener(queues = "replenishment.requested.v1")
     public void onReplenishmentRequested(String message) {
         try {
-            ReplenishmentRequestedMessage event = objectMapper.readValue(message, ReplenishmentRequestedMessage.class);
+            ReplenishmentRequestedMessage event =
+                    objectMapper.readValue(message, ReplenishmentRequestedMessage.class);
             eventLogService.save(
                     EventType.REPLENISHMENT_REQUESTED,
                     SourceService.WAREHOUSE,
                     event.toPayload(),
                     0,
-                    ""
-            );
+                    "");
         } catch (Exception e) {
             log.error("Error processing replenishment.requested.v1. Payload: {}", message, e);
             throw new RuntimeException("Error processing replenishment.requested.v1", e);

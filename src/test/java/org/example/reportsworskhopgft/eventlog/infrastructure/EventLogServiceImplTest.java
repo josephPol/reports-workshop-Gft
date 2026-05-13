@@ -1,12 +1,18 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogIdJPA;
+import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -14,21 +20,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class EventLogServiceImplTest {
 
-    @Mock
-    private EventLogRepositoryJPA eventLogRepositoryJPA;
+    @Mock private EventLogRepositoryJPA eventLogRepositoryJPA;
 
-    @InjectMocks
-    private EventLogServiceImpl eventLogRepository;
+    @InjectMocks private EventLogServiceImpl eventLogRepository;
 
     @Test
     void should_return_empty_list_when_findAllEventsLogs_is_called() {
@@ -43,14 +40,14 @@ class EventLogServiceImplTest {
     @Test
     void should_map_jpa_entities_to_domain_when_findAllEventsLogs_is_called() {
         EventLogIdJPA id = new EventLogIdJPA("id-1");
-        EventLogJPA jpaEntity = new EventLogJPA(
-                id,
-                EventType.DELIVERY_CREATED,
-                SourceService.REPORTING,
-                "{\"payload\":true}",
-                7,
-                "2026-05-04T12:00:00"
-        );
+        EventLogJPA jpaEntity =
+                new EventLogJPA(
+                        id,
+                        EventType.DELIVERY_CREATED,
+                        SourceService.REPORTING,
+                        "{\"payload\":true}",
+                        7,
+                        "2026-05-04T12:00:00");
         when(eventLogRepositoryJPA.findAll()).thenReturn(List.of(jpaEntity));
 
         List<EventLog> result = eventLogRepository.findAllEventsLogs();
@@ -68,7 +65,8 @@ class EventLogServiceImplTest {
     @Test
     void should_return_null_when_findEventLogById_is_called() {
         EventLogId nonExistentId = new EventLogId("non-existent-uuid");
-        when(eventLogRepositoryJPA.findById(new EventLogIdJPA(nonExistentId.value()))).thenReturn(Optional.empty());
+        when(eventLogRepositoryJPA.findById(new EventLogIdJPA(nonExistentId.value())))
+                .thenReturn(Optional.empty());
 
         EventLog result = eventLogRepository.findEventLogById(nonExistentId);
 
@@ -78,15 +76,16 @@ class EventLogServiceImplTest {
     @Test
     void should_return_mapped_event_when_findEventLogById_is_called_and_entity_exists() {
         EventLogId id = new EventLogId("id-2");
-        EventLogJPA jpaEntity = new EventLogJPA(
-                new EventLogIdJPA(id.value()),
-                EventType.TRUCK_REGISTERED,
-                SourceService.TRANSPORT,
-                "{\"truckId\":\"1\"}",
-                2,
-                "2026-05-07T18:00:00"
-        );
-        when(eventLogRepositoryJPA.findById(new EventLogIdJPA(id.value()))).thenReturn(Optional.of(jpaEntity));
+        EventLogJPA jpaEntity =
+                new EventLogJPA(
+                        new EventLogIdJPA(id.value()),
+                        EventType.TRUCK_REGISTERED,
+                        SourceService.TRANSPORT,
+                        "{\"truckId\":\"1\"}",
+                        2,
+                        "2026-05-07T18:00:00");
+        when(eventLogRepositoryJPA.findById(new EventLogIdJPA(id.value())))
+                .thenReturn(Optional.of(jpaEntity));
 
         EventLog result = eventLogRepository.findEventLogById(id);
 
@@ -102,14 +101,15 @@ class EventLogServiceImplTest {
     @Test
     void should_map_and_save_event_log() {
         EventLogId id = EventLogId.generate();
-        EventLog eventLog = EventLog.builder()
-                .id(id)
-                .eventType(EventType.TRUCK_POSITION_UPDATED)
-                .sourceService(SourceService.TRANSPORT)
-                .payload("{\"ok\":true}")
-                .simulationDay(3)
-                .occurredAt("2026-05-08T10:00:00")
-                .build();
+        EventLog eventLog =
+                EventLog.builder()
+                        .id(id)
+                        .eventType(EventType.TRUCK_POSITION_UPDATED)
+                        .sourceService(SourceService.TRANSPORT)
+                        .payload("{\"ok\":true}")
+                        .simulationDay(3)
+                        .occurredAt("2026-05-08T10:00:00")
+                        .build();
 
         eventLogRepository.save(eventLog);
 

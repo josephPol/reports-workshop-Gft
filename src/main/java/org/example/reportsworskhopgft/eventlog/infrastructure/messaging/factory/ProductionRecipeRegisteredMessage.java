@@ -4,5 +4,4 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record ProductionRecipeRegisteredMessage(
         @JsonProperty("simulationDay") int simulationDay,
-        @JsonProperty("occurredAt")    String occurredAt
-) {}
+        @JsonProperty("occurredAt") String occurredAt) {}

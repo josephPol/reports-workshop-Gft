@@ -3,8 +3,7 @@ package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record DeliveryCreatedEvent(
-        @JsonProperty("deliveryId")   String deliveryId,
-        @JsonProperty("truckId")      String truckId,
+        @JsonProperty("deliveryId") String deliveryId,
+        @JsonProperty("truckId") String truckId,
         @JsonProperty("simulationDay") int simulationDay,
-        @JsonProperty("timestamp")     String timestamp
-) {}
+        @JsonProperty("timestamp") String timestamp) {}

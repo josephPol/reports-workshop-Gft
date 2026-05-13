@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
-import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 
@@ -42,5 +41,4 @@ public class EventLogJPA {
     @NotNull
     @Column(name = "occurred_at", nullable = false, length = 50)
     private String occurredAt;
-
 }

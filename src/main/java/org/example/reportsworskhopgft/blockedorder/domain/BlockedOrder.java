@@ -1,6 +1,5 @@
 package org.example.reportsworskhopgft.blockedorder.domain;
 
-
 import lombok.*;
 
 @Getter
@@ -9,12 +8,10 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode
 @Builder
-
 public class BlockedOrder {
 
     private String orderId;
     private String factoryId;
     private String reason;
     private Integer blockedSinceDay;
-
 }
