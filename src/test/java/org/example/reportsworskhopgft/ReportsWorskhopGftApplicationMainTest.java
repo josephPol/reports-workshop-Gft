@@ -21,14 +21,11 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 )
 class ReportsWorskhopGftApplicationMainTest {
 
-    @MockitoBean
-    private EventLogRepositoryJPA eventLogRepositoryJPA;
+    @MockitoBean private EventLogRepositoryJPA eventLogRepositoryJPA;
 
-    @MockitoBean
-    private BlockedOrderRepositoryJPA blockedOrderRepositoryJPA;
+    @MockitoBean private BlockedOrderRepositoryJPA blockedOrderRepositoryJPA;
 
-    @MockitoBean
-    private ConnectionFactory connectionFactory;
+    @MockitoBean private ConnectionFactory connectionFactory;
 
     @Test
     void main_should_run() {

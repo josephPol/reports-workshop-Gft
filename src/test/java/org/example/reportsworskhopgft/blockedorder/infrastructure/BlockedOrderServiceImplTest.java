@@ -1,5 +1,11 @@
 package org.example.reportsworskhopgft.blockedorder.infrastructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
+import java.util.Optional;
+import org.example.reportsworskhopgft.blockedorder.application.impl.BlockedOrderServiceImpl;
 import org.example.reportsworskhopgft.blockedorder.domain.BlockedOrder;
 import org.example.reportsworskhopgft.blockedorder.infrastructure.persistence.BlockedOrderJPA;
 import org.junit.jupiter.api.Test;
@@ -8,29 +14,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-import java.util.Optional;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class BlockedOrderServiceImplTest {
 
-    @Mock
-    private BlockedOrderRepositoryJPA blockedOrderRepositoryJPA;
+    @Mock private BlockedOrderRepositoryJPA blockedOrderRepositoryJPA;
 
-    @InjectMocks
-    private BlockedOrderServiceImpl service;
+    @InjectMocks private BlockedOrderServiceImpl service;
 
     @Test
     void should_map_all_entities_to_domain_when_getAllBlockedOrders_is_called() {
-        BlockedOrderJPA entity = new BlockedOrderJPA(
-                "order-1",
-                "factory-1",
-                "reason-1",
-                10
-        );
+        BlockedOrderJPA entity = new BlockedOrderJPA("order-1", "factory-1", "reason-1", 10);
         when(blockedOrderRepositoryJPA.findAll()).thenReturn(List.of(entity));
 
         List<BlockedOrder> result = service.getAllBlockedOrders();
@@ -54,12 +47,7 @@ class BlockedOrderServiceImplTest {
 
     @Test
     void should_return_mapped_entity_when_getBlockedOrderById_is_called_and_found() {
-        BlockedOrderJPA entity = new BlockedOrderJPA(
-                "order-2",
-                "factory-2",
-                "reason-2",
-                3
-        );
+        BlockedOrderJPA entity = new BlockedOrderJPA("order-2", "factory-2", "reason-2", 3);
         when(blockedOrderRepositoryJPA.findById("order-2")).thenReturn(Optional.of(entity));
 
         BlockedOrder result = service.getBlockedOrderById("order-2");
@@ -71,4 +59,3 @@ class BlockedOrderServiceImplTest {
         assertThat(result.getBlockedSinceDay()).isEqualTo(3);
     }
 }
-

@@ -2,9 +2,6 @@ package org.example.reportsworskhopgft.eventlog.domain;
 
 import lombok.*;
 
-import java.util.UUID;
-
-
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,5 +16,4 @@ public class EventLog {
     private String payload;
     private Integer simulationDay;
     private String occurredAt;
-
 }

@@ -1,8 +1,9 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record DeliveryCompletedEvent(
-        String deliveryId,
-        String truckId,
-        int simulationDay,
-        String timestamp
-) {}
+        @JsonProperty("deliveryId") String deliveryId,
+        @JsonProperty("truckId") String truckId,
+        @JsonProperty("simulationDay") int simulationDay,
+        @JsonProperty("timestamp") String timestamp) {}

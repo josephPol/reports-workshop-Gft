@@ -1,5 +1,9 @@
 package org.example.reportsworskhopgft.blockedorder.infrastructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
 import org.example.reportsworskhopgft.blockedorder.application.BlockedOrderService;
 import org.example.reportsworskhopgft.blockedorder.domain.BlockedOrder;
 import org.junit.jupiter.api.Test;
@@ -8,19 +12,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class BlockedOrderControllerTest {
 
-    @Mock
-    private BlockedOrderService blockedOrderService;
+    @Mock private BlockedOrderService blockedOrderService;
 
-    @InjectMocks
-    private BlockedOrderController controller;
+    @InjectMocks private BlockedOrderController controller;
 
     @Test
     void should_return_all_blocked_orders() {
@@ -42,4 +39,3 @@ class BlockedOrderControllerTest {
         assertThat(result).isEqualTo(expected);
     }
 }
-

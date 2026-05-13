@@ -1,9 +1,8 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
-
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.time.TimeAdvancedMessage;
-import org.junit.jupiter.api.Test;
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.time;
 
 import static org.assertj.core.api.Assertions.assertThat;
+
+import org.junit.jupiter.api.Test;
 
 class TimeAdvancedMessageTest {
 

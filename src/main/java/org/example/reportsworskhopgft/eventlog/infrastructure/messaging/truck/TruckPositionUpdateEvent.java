@@ -1,11 +1,11 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 
-public record TruckPositionUpdateEvent(
-        String truckId,
-        Position position,
-        int simulationDay,
-        String timestamp
-) {
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-    public record Position(int x, int y) {}
+public record TruckPositionUpdateEvent(
+        @JsonProperty("truckId") String truckId,
+        @JsonProperty("position") Position position,
+        @JsonProperty("simulationDay") int simulationDay,
+        @JsonProperty("timestamp") String timestamp) {
+    public record Position(@JsonProperty("x") int x, @JsonProperty("y") int y) {}
 }

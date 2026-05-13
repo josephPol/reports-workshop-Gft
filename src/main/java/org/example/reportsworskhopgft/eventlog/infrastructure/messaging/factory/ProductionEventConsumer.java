@@ -19,109 +19,115 @@ public class ProductionEventConsumer {
     private final ObjectMapper objectMapper;
 
     @RabbitListener(queues = RabbitMQConfig.PRODUCTION_ORDER_CREATED_QUEUE_NAME)
-    public void onProductionOrderCreated(String message) {
+    public void onProductionOrderCreated(ProductionOrderCreatedMessage event) {
         try {
-            ProductionOrderCreatedMessage event = objectMapper.readValue(message, ProductionOrderCreatedMessage.class);
+            log.info("Evento de producción recibido: {}", event);
+
+            String jsonPayload = objectMapper.writeValueAsString(event);
 
             eventLogService.save(
                     EventType.PRODUCTION_ORDER_CREATED,
                     SourceService.FACTORY,
-                    message,
+                    jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
-            log.error("Error processing production.order.created.v1. Payload: {}", message, e);
+            log.error("Error processing production.order.created.v1: {}", event, e);
             throw new RuntimeException("Error processing production.order.created.v1", e);
         }
     }
 
     @RabbitListener(queues = RabbitMQConfig.PRODUCTION_ORDER_STARTED_QUEUE_NAME)
-    public void onProductionOrderStarted(String message) {
+    public void onProductionOrderStarted(ProductionOrderStartedMessage event) {
         try {
-            ProductionOrderStartedMessage event = objectMapper.readValue(message, ProductionOrderStartedMessage.class);
+            log.info("Evento de producción recibido: {}", event);
+
+            String jsonPayload = objectMapper.writeValueAsString(event);
 
             eventLogService.save(
                     EventType.PRODUCTION_ORDER_STARTED,
                     SourceService.FACTORY,
-                    message,
+                    jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
-            log.error("Error processing production.order.started.v1. Payload: {}", message, e);
+            log.error("Error processing production.order.started.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing production.order.started.v1", e);
         }
     }
 
     @RabbitListener(queues = RabbitMQConfig.PRODUCTION_ORDER_COMPLETED_QUEUE_NAME)
-    public void onProductionOrderCompleted(String message) {
+    public void onProductionOrderCompleted(ProductionOrderCompletedMessage event) {
         try {
-            ProductionOrderCompletedMessage event = objectMapper.readValue(message, ProductionOrderCompletedMessage.class);
+            log.info("Evento de producción recibido: {}", event);
+
+            String jsonPayload = objectMapper.writeValueAsString(event);
 
             eventLogService.save(
                     EventType.PRODUCTION_ORDER_COMPLETED,
                     SourceService.FACTORY,
-                    message,
+                    jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
-            log.error("Error processing production.order.completed.v1. Payload: {}", message, e);
+            log.error("Error processing production.order.completed.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing production.order.completed.v1", e);
         }
     }
 
     @RabbitListener(queues = RabbitMQConfig.PRODUCTION_ORDER_BLOCKED_QUEUE_NAME)
-    public void onProductionOrderBlocked(String message) {
+    public void onProductionOrderBlocked(ProductionOrderBlockedMessage event) {
         try {
-            ProductionOrderBlockedMessage event = objectMapper.readValue(message, ProductionOrderBlockedMessage.class);
+            log.info("Evento de producción recibido: {}", event);
+
+            String jsonPayload = objectMapper.writeValueAsString(event);
 
             eventLogService.save(
                     EventType.PRODUCTION_ORDER_BLOCKED,
                     SourceService.FACTORY,
-                    message,
+                    jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
-            log.error("Error processing production.order.completed.v1. Payload: {}", message, e);
+            log.error("Error processing production.order.completed.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing production.order.completed.v1", e);
         }
     }
 
     @RabbitListener(queues = RabbitMQConfig.RECIPE_REGISTERED_QUEUE_NAME)
-    public void onRecipeRegistered(String message) {
+    public void onRecipeRegistered(ProductionRecipeRegisteredMessage event) {
         try {
-            ProductionRecipeRegisteredMessage event = objectMapper.readValue(message, ProductionRecipeRegisteredMessage.class);
+            log.info("Evento de producción recibido: {}", event);
+
+            String jsonPayload = objectMapper.writeValueAsString(event);
 
             eventLogService.save(
                     EventType.PRODUCTION_RECIPE_REGISTERED,
                     SourceService.FACTORY,
-                    message,
+                    jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
-            log.error("Error processing production.order.completed.v1. Payload: {}", message, e);
+            log.error("Error processing production.order.completed.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing production.order.completed.v1", e);
         }
     }
 
     @RabbitListener(queues = RabbitMQConfig.FACTORY_REGISTERED_QUEUE_NAME)
-    public void onFactoryRegistered(String message) {
+    public void onFactoryRegistered(ProductionFactoryRegisteredMessage event) {
         try {
-            ProductionFactoryRegisteredMessage event = objectMapper.readValue(message, ProductionFactoryRegisteredMessage.class);
+            log.info("Evento de producción recibido: {}", event);
+
+            String jsonPayload = objectMapper.writeValueAsString(event);
 
             eventLogService.save(
                     EventType.PRODUCTION_FACTORY_REGISTERED,
                     SourceService.FACTORY,
-                    message,
+                    jsonPayload,
                     event.simulationDay(),
-                    event.occurredAt()
-            );
+                    event.occurredAt());
         } catch (Exception e) {
-            log.error("Error processing production.order.completed.v1. Payload: {}", message, e);
+            log.error("Error processing production.order.completed.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing production.order.completed.v1", e);
         }
     }
