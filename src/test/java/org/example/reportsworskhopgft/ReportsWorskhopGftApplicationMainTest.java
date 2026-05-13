@@ -17,7 +17,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
                 "--management.endpoints.enabled-by-default=false",
                 "--spring.autoconfigure.exclude=org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,"
                         + "org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,"
-                        + "org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,"
                         + "org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration"
         }
 )
