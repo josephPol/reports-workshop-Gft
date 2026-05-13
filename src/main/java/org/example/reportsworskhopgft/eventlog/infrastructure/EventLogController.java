@@ -3,7 +3,6 @@ package org.example.reportsworskhopgft.eventlog.infrastructure;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
-import org.example.reportsworskhopgft.eventlog.application.ReportService;
 import org.example.reportsworskhopgft.eventlog.application.projections.OrderHistoryProjection;
 import org.example.reportsworskhopgft.eventlog.application.projections.SystemStatsProjection;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
@@ -36,17 +35,15 @@ public class EventLogController {
         return eventLogService.findEventLogById(id);
     }
 
-    private final ReportService reportService;
-
     @GetMapping("/stats")
     public ResponseEntity<SystemStatsProjection> getSystemStats() {
-        SystemStatsProjection stats = reportService.getSystemStats();
+        SystemStatsProjection stats = eventLogService.getSystemStats();
         return ResponseEntity.ok(stats);
     }
 
     @GetMapping("/orders/history")
     public ResponseEntity<List<OrderHistoryProjection>> getOrderHistory() {
-        List<OrderHistoryProjection> history = reportService.getOrderHistory();
+        List<OrderHistoryProjection> history = eventLogService.getOrderHistory();
         return ResponseEntity.ok(history);
     }
 }

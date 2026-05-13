@@ -1,5 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
 import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
@@ -22,7 +23,8 @@ class EventLogJPAServiceImplTest {
     void shouldCreateAndSaveEventLog() {
 
         EventLogRepositoryJPA repositoryMock = mock(EventLogRepositoryJPA.class);
-        EventLogServiceImpl service = new EventLogServiceImpl(repositoryMock);
+        ObjectMapper objectMapperMock = mock(ObjectMapper.class);
+        EventLogServiceImpl service = new EventLogServiceImpl(repositoryMock, objectMapperMock);
 
 
         service.save(
@@ -47,7 +49,8 @@ class EventLogJPAServiceImplTest {
     @Test
     void should_return_all_events_when_findAllEventsLogs_is_called() {
         EventLogRepositoryJPA repositoryMock = mock(EventLogRepositoryJPA.class);
-        EventLogServiceImpl service = new EventLogServiceImpl(repositoryMock);
+        ObjectMapper objectMapperMock = mock(ObjectMapper.class);
+        EventLogServiceImpl service = new EventLogServiceImpl(repositoryMock, objectMapperMock);
 
         EventLogIdJPA id = new EventLogIdJPA("id-1");
         EventLogJPA jpa = new EventLogJPA(

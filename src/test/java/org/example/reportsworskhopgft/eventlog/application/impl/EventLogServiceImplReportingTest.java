@@ -19,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-class ReportServiceImplTest {
+class EventLogServiceImplTest {
 
     @Mock
     private EventLogRepositoryJPA eventLogRepository;
@@ -28,7 +28,7 @@ class ReportServiceImplTest {
     private ObjectMapper objectMapper;
 
     @InjectMocks
-    private ReportServiceImpl reportService;
+    private EventLogServiceImpl eventLogService;
 
     @Test
     void should_calculate_system_stats_correctly() throws Exception {
@@ -62,7 +62,7 @@ class ReportServiceImplTest {
         when(objectMapper.readTree(truckStatus.getPayload())).thenReturn(mockNode);
 
         // Act
-        SystemStatsProjection stats = reportService.getSystemStats();
+        SystemStatsProjection stats = eventLogService.getSystemStats();
 
         // Assert
         assertEquals(1, stats.totalOrders());
@@ -73,7 +73,7 @@ class ReportServiceImplTest {
     @Test
     void should_return_empty_order_history_initially() {
         // Act
-        List<OrderHistoryProjection> history = reportService.getOrderHistory();
+        List<OrderHistoryProjection> history = eventLogService.getOrderHistory();
 
         // Assert
         org.junit.jupiter.api.Assertions.assertTrue(history.isEmpty(), "Order history list should be empty");
