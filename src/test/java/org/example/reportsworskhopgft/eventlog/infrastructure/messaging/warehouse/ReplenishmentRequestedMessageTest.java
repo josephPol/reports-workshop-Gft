@@ -1,8 +1,7 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.warehouse;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.warehouse.ReplenishmentRequestedMessage;
 import org.junit.jupiter.api.Test;
 
 class ReplenishmentRequestedMessageTest {

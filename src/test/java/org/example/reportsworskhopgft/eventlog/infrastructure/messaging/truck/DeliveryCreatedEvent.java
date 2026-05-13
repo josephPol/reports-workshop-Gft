@@ -1,8 +1,7 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.DeliveryCreatedEvent;
 import org.junit.jupiter.api.Test;
 
 class DeliveryCreatedEventTest {

@@ -1,4 +1,4 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,7 +11,6 @@ import java.util.UUID;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,7 +41,7 @@ class TransportEventConsumerTest {
 
     @Test
     void should_process_truck_registered_event_successfully() {
-        // Asegúrate de que los campos coincidan con tus Records
+
         var event =
                 new TruckRegisteredEvent(
                         UUID.randomUUID(),

@@ -1,4 +1,4 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.factory;
 
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.factory.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
