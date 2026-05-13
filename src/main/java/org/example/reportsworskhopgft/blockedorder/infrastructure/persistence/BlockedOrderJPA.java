@@ -33,5 +33,4 @@ public class BlockedOrderJPA {
     @NotNull
     @Column(name = "blocked_since_day", nullable = false)
     private Integer blockedSinceDay;
-
 }

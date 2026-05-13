@@ -1,12 +1,11 @@
 package org.example.reportsworskhopgft.eventlog.domain;
 
-import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
-import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogIdJPA;
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.UUID;
-
-import static org.junit.jupiter.api.Assertions.*;
+import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogIdJPA;
+import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
+import org.junit.jupiter.api.Test;
 
 class EventLogJPADomainTest {
 
@@ -48,14 +47,14 @@ class EventLogJPADomainTest {
     @Test
     void shouldExposeEventLogState() {
         EventLogIdJPA id = new EventLogIdJPA(UUID.randomUUID().toString());
-        EventLogJPA eventLogJPA = new EventLogJPA(
-                id,
-                EventType.DELIVERY_CREATED,
-                SourceService.REPORTING,
-                "{\"payload\":true}",
-                7,
-                "2026-05-04T12:00:00"
-        );
+        EventLogJPA eventLogJPA =
+                new EventLogJPA(
+                        id,
+                        EventType.DELIVERY_CREATED,
+                        SourceService.REPORTING,
+                        "{\"payload\":true}",
+                        7,
+                        "2026-05-04T12:00:00");
 
         assertNotNull(eventLogJPA.getId());
         assertEquals(id.getValue(), eventLogJPA.getId().getValue());
@@ -69,8 +68,11 @@ class EventLogJPADomainTest {
     @Test
     void shouldExposeAvailableDomainEnums() {
         assertEquals(EventType.TIME_ADVANCED, EventType.valueOf("TIME_ADVANCED"));
-        assertEquals(EventType.WAREHOUSE_STOCK_CHANGED, EventType.values()[EventType.values().length - 1]);
+        assertEquals(
+                EventType.WAREHOUSE_STOCK_CHANGED,
+                EventType.values()[EventType.values().length - 1]);
         assertEquals(SourceService.FACTORY, SourceService.valueOf("FACTORY"));
-        assertEquals(SourceService.DELIVERY, SourceService.values()[SourceService.values().length - 1]);
+        assertEquals(
+                SourceService.DELIVERY, SourceService.values()[SourceService.values().length - 1]);
     }
 }

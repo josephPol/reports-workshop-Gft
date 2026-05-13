@@ -1,15 +1,16 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.warehouse.WarehouseStockChangedMessage;
 import org.junit.jupiter.api.Test;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class WarehouseStockChangedMessageTest {
 
     @Test
     void should_create_message_with_all_fields() {
-        WarehouseStockChangedMessage message = new WarehouseStockChangedMessage("abc-123", 50, "INCREASE");
+        WarehouseStockChangedMessage message =
+                new WarehouseStockChangedMessage("abc-123", 50, "INCREASE");
 
         assertThat(message.productId()).isEqualTo("abc-123");
         assertThat(message.quantity()).isEqualTo(50);

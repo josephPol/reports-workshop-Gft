@@ -1,7 +1,11 @@
 package org.example.reportsworskhopgft.eventlog.application.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import org.example.reportsworskhopgft.eventlog.application.projections.OrderHistoryProjection;
 import org.example.reportsworskhopgft.eventlog.application.projections.SystemStatsProjection;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
@@ -13,22 +17,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.when;
-
 @ExtendWith(MockitoExtension.class)
 class EventLogServiceImplTest {
 
-    @Mock
-    private EventLogRepositoryJPA eventLogRepository;
+    @Mock private EventLogRepositoryJPA eventLogRepository;
 
-    @Mock
-    private ObjectMapper objectMapper;
+    @Mock private ObjectMapper objectMapper;
 
-    @InjectMocks
-    private EventLogServiceImpl eventLogService;
+    @InjectMocks private EventLogServiceImpl eventLogService;
 
     @Test
     void should_calculate_system_stats_correctly() throws Exception {
@@ -39,7 +35,6 @@ class EventLogServiceImplTest {
         EventLogJPA truckStatus = new EventLogJPA();
         truckStatus.setEventType(EventType.TRUCK_STATUS_CHANGED);
         truckStatus.setPayload("{\"truckId\":\"T1\", \"status\":\"IN_TRANSIT\"}");
-
 
         EventLogJPA orderCompleted = new EventLogJPA();
         orderCompleted.setEventType(EventType.PRODUCTION_ORDER_COMPLETED);
@@ -52,13 +47,21 @@ class EventLogServiceImplTest {
         corruptTruck.setPayload("not-valid-json");
 
         // Mock repository to return all events
-        when(eventLogRepository.findAll()).thenReturn(List.of(orderCreated, orderCompleted, orderBlocked, truckStatus, corruptTruck));
+        when(eventLogRepository.findAll())
+                .thenReturn(
+                        List.of(
+                                orderCreated,
+                                orderCompleted,
+                                orderBlocked,
+                                truckStatus,
+                                corruptTruck));
 
         // Forced error in Jackson
-        when(objectMapper.readTree("not-valid-json")).thenThrow(new RuntimeException("Parse error"));
+        when(objectMapper.readTree("not-valid-json"))
+                .thenThrow(new RuntimeException("Parse error"));
 
-
-        JsonNode mockNode = new ObjectMapper().readTree("{\"truckId\":\"T1\", \"status\":\"IN_TRANSIT\"}");
+        JsonNode mockNode =
+                new ObjectMapper().readTree("{\"truckId\":\"T1\", \"status\":\"IN_TRANSIT\"}");
         when(objectMapper.readTree(truckStatus.getPayload())).thenReturn(mockNode);
 
         // Act
@@ -70,12 +73,14 @@ class EventLogServiceImplTest {
         assertEquals(1, stats.blockedOrders());
         assertEquals(1, stats.trucksInTransit());
     }
+
     @Test
     void should_return_empty_order_history_initially() {
         // Act
         List<OrderHistoryProjection> history = eventLogService.getOrderHistory();
 
         // Assert
-        org.junit.jupiter.api.Assertions.assertTrue(history.isEmpty(), "Order history list should be empty");
+        org.junit.jupiter.api.Assertions.assertTrue(
+                history.isEmpty(), "Order history list should be empty");
     }
 }

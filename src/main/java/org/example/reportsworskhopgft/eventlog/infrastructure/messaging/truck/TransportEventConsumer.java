@@ -1,6 +1,7 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
@@ -10,7 +11,6 @@ import org.example.reportsworskhopgft.rabbitmq.RabbitMQConfig;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime;
 @Slf4j
 @Component
 @RequiredArgsConstructor
@@ -55,10 +55,11 @@ public class TransportEventConsumer {
 
         } catch (Exception e) {
 
-            log.error("Error processing truck.position.update.v1. Payload: {}",event, e);
+            log.error("Error processing truck.position.update.v1. Payload: {}", event, e);
             throw new RuntimeException("Error processing truck position event", e);
         }
     }
+
     @RabbitListener(queues = RabbitMQConfig.TRUCK_STATUS_CHANGED_QUEUE_NAME)
     public void onTruckStatusChanged(TruckStatusChangedEvent event) {
         try {
@@ -71,8 +72,7 @@ public class TransportEventConsumer {
                     SourceService.TRANSPORT,
                     jsonPayload,
                     event.simulationDay(),
-                    event.timestamp()
-            );
+                    event.timestamp());
 
         } catch (Exception e) {
 
@@ -81,27 +81,28 @@ public class TransportEventConsumer {
         }
     }
 
-//    @RabbitListener(queues = "delivery.created.v1")
-//    public void onDeliveryCreated(String message) {
-//        try {
-//
-//            DeliveryCreatedEvent event = objectMapper.readValue(message, DeliveryCreatedEvent.class);
-//
-//
-//            eventLogServiceImpl.save(
-//                    EventType.DELIVERY_CREATED,
-//                    SourceService.TRANSPORT,
-//                    objectMapper.writeValueAsString(event),
-//                    event.simulationDay(),
-//                    event.timestamp()
-//            );
-//
-//        } catch (Exception e) {
-//
-//            log.error("Error processing delivery.created.v1. Payload: {}", message, e);
-//            throw new RuntimeException("Error processing delivery created event", e);
-//        }
-//    }
+    //    @RabbitListener(queues = "delivery.created.v1")
+    //    public void onDeliveryCreated(String message) {
+    //        try {
+    //
+    //            DeliveryCreatedEvent event = objectMapper.readValue(message,
+    // DeliveryCreatedEvent.class);
+    //
+    //
+    //            eventLogServiceImpl.save(
+    //                    EventType.DELIVERY_CREATED,
+    //                    SourceService.TRANSPORT,
+    //                    objectMapper.writeValueAsString(event),
+    //                    event.simulationDay(),
+    //                    event.timestamp()
+    //            );
+    //
+    //        } catch (Exception e) {
+    //
+    //            log.error("Error processing delivery.created.v1. Payload: {}", message, e);
+    //            throw new RuntimeException("Error processing delivery created event", e);
+    //        }
+    //    }
     @RabbitListener(queues = RabbitMQConfig.DELIVERY_COMPLETED_QUEUE_NAME)
     public void onDeliveryCompleted(DeliveryCompletedEvent event) {
         try {
@@ -114,8 +115,7 @@ public class TransportEventConsumer {
                     SourceService.TRANSPORT,
                     jsonPayload,
                     event.simulationDay(),
-                    event.timestamp()
-            );
+                    event.timestamp());
 
             // Also save truck status changed to available
             eventLogServiceImpl.save(
@@ -123,8 +123,7 @@ public class TransportEventConsumer {
                     SourceService.TRANSPORT,
                     jsonPayload,
                     event.simulationDay(),
-                    event.timestamp()
-            );
+                    event.timestamp());
 
         } catch (Exception e) {
             log.error("Error processing delivery.completed.v1. Payload: {}", event, e);

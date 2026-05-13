@@ -2,6 +2,10 @@ package org.example.reportsworskhopgft.eventlog.application.impl;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
 import org.example.reportsworskhopgft.eventlog.application.projections.OrderHistoryProjection;
 import org.example.reportsworskhopgft.eventlog.application.projections.SystemStatsProjection;
@@ -10,15 +14,10 @@ import org.example.reportsworskhopgft.eventlog.domain.EventLogId;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.eventlog.infrastructure.EventLogRepositoryJPA;
-import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogIdJPA;
+import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 public class EventLogServiceImpl implements EventLogService {
@@ -33,9 +32,7 @@ public class EventLogServiceImpl implements EventLogService {
 
     @Override
     public List<EventLog> findAllEventsLogs() {
-        return jpaRepository.findAll().stream()
-                .map(this::mapToDomain)
-                .collect(Collectors.toList());
+        return jpaRepository.findAll().stream().map(this::mapToDomain).collect(Collectors.toList());
     }
 
     @Override
@@ -59,12 +56,12 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     public SystemStatsProjection getSystemStats() {
 
-        List<EventLogJPA> allEvents = jpaRepository.findAll();;
+        List<EventLogJPA> allEvents = jpaRepository.findAll();
+        ;
 
         int totalOrders = 0;
         int completedOrders = 0;
         int blockedOrders = 0;
-
 
         Map<String, String> truckStatuses = new HashMap<>();
 
@@ -87,24 +84,32 @@ public class EventLogServiceImpl implements EventLogService {
             }
         }
 
+        int trucksInTransit =
+                (int)
+                        truckStatuses.values().stream()
+                                .filter(status -> status.equals("IN_TRANSIT"))
+                                .count();
 
-        int trucksInTransit = (int) truckStatuses.values().stream()
-                .filter(status -> status.equals("IN_TRANSIT"))
-                .count();
-
-        return new SystemStatsProjection(totalOrders, completedOrders, blockedOrders, trucksInTransit);
+        return new SystemStatsProjection(
+                totalOrders, completedOrders, blockedOrders, trucksInTransit);
     }
 
     @Transactional
-    public void save(EventType eventType, SourceService sourceService, String payload, Integer simulationDay, String occurredAt) {
-        save(EventLog.builder()
-                .id(EventLogId.generate())
-                .eventType(eventType)
-                .sourceService(sourceService)
-                .payload(payload)
-                .simulationDay(simulationDay)
-                .occurredAt(occurredAt)
-                .build());
+    public void save(
+            EventType eventType,
+            SourceService sourceService,
+            String payload,
+            Integer simulationDay,
+            String occurredAt) {
+        save(
+                EventLog.builder()
+                        .id(EventLogId.generate())
+                        .eventType(eventType)
+                        .sourceService(sourceService)
+                        .payload(payload)
+                        .simulationDay(simulationDay)
+                        .occurredAt(occurredAt)
+                        .build());
     }
 
     private EventLog mapToDomain(EventLogJPA jpaEntity) {
@@ -114,8 +119,7 @@ public class EventLogServiceImpl implements EventLogService {
                 jpaEntity.getSourceService(),
                 jpaEntity.getPayload(),
                 jpaEntity.getSimulationDay(),
-                jpaEntity.getOccurredAt()
-        );
+                jpaEntity.getOccurredAt());
     }
 
     private EventLogJPA mapToJPA(EventLog domain) {
@@ -126,7 +130,6 @@ public class EventLogServiceImpl implements EventLogService {
                 domain.getSourceService(),
                 domain.getPayload(),
                 domain.getSimulationDay(),
-                domain.getOccurredAt()
-        );
+                domain.getOccurredAt());
     }
 }
