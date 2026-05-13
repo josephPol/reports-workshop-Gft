@@ -1,8 +1,7 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.factory;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.factory.ProductionOrderBlockedMessage;
 import org.junit.jupiter.api.Test;
 
 class ProductionOrderBlockedMessageTest {

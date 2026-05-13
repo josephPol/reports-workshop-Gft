@@ -1,4 +1,4 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,10 +11,6 @@ import java.util.UUID;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.TruckRegisteredEvent;
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.TruckPositionUpdateEvent;
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.TruckStatusChangedEvent;
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.DeliveryCompletedEvent;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
