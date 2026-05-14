@@ -1,7 +1,7 @@
 --liquibase formatted sql
 
 --changeset pedro:001-create-event-log
-CREATE TABLE event_log (
+CREATE TABLE IF NOT EXISTS event_log (
                            id          VARCHAR(255) NOT NULL,
                            event_type  VARCHAR(100) NOT NULL,
                            source_service VARCHAR(100) NOT NULL,

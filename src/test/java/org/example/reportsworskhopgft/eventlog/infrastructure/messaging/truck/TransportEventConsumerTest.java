@@ -212,7 +212,9 @@ class TransportEventConsumerTest {
     @Test
     void should_throw_exception_when_onTruckPositionUpdate_data_access_fails()
             throws JsonProcessingException {
-        var event = new TruckPositionUpdateEvent("T-1", new TruckPositionUpdateEvent.Position(0, 0), DAY, TIMESTAMP);
+        var event =
+                new TruckPositionUpdateEvent(
+                        "T-1", new TruckPositionUpdateEvent.Position(0, 0), DAY, TIMESTAMP);
 
         doReturn(JSON_PAYLOAD).when(objectMapper).writeValueAsString(event);
 
