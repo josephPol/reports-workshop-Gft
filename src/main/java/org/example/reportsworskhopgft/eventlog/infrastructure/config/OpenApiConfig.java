@@ -1,4 +1,3 @@
-
 package org.example.reportsworskhopgft.eventlog.infrastructure.config;
 
 import io.swagger.v3.oas.models.OpenAPI;
@@ -12,9 +11,11 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI customOpenAPI() {
         return new OpenAPI()
-                .info(new Info()
-                        .title("Reporting API")
-                        .version("1.0.0")
-                        .description("Endpoints for checking the system state, real time statics and order history."));
+                .info(
+                        new Info()
+                                .title("Reporting API")
+                                .version("1.0.0")
+                                .description(
+                                        "Endpoints for checking the system state, real time statics and order history."));
     }
 }

@@ -37,7 +37,6 @@ class TransportEventConsumerTest {
         // lenient().when(objectMapper.writeValueAsString(any())).thenReturn(JSON_PAYLOAD);
     }
 
-    // --- TESTS DE FLUJO EXITOSO ---
 
     @Test
     void should_process_truck_registered_event_successfully() throws JsonProcessingException {
@@ -108,7 +107,6 @@ class TransportEventConsumerTest {
 
         consumer.onDeliveryCompleted(event);
 
-        // Verifica que se guardan los dos eventos que pide tu lógica
         verify(eventLogServiceImpl)
                 .save(
                         EventType.DELIVERY_COMPLETED,
@@ -124,8 +122,6 @@ class TransportEventConsumerTest {
                         DAY,
                         TIMESTAMP);
     }
-
-    // --- TESTS DE COBERTURA DE EXCEPCIONES (BLOQUES CATCH) ---
 
     @Test
     void should_throw_exception_when_onTruckRegistered_fails() throws JsonProcessingException {
