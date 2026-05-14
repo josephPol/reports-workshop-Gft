@@ -1,9 +1,9 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.UUID;
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.TruckRegisteredEvent;
+
 import org.junit.jupiter.api.Test;
 
 class TruckRegisteredEventTest {
