@@ -1,7 +1,9 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.factory;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -15,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessException;
 
 @ExtendWith(MockitoExtension.class)
 class ProductionEventConsumerTest {
@@ -177,5 +180,183 @@ class ProductionEventConsumerTest {
         var event = new ProductionFactoryRegisteredMessage(5, DATE);
 
         assertThrows(RuntimeException.class, () -> consumer.onFactoryRegistered(event));
+    }
+
+    @Test
+    void should_handle_JsonProcessingException_in_onProductionOrderCreated()
+            throws JsonProcessingException {
+        var event = new ProductionOrderCreatedMessage("O1", "F1", "P1", 10, 5, DATE);
+        when(objectMapper.writeValueAsString(eq(event)))
+                .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
+
+        consumer.onProductionOrderCreated(event);
+
+        verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
+    }
+
+    @Test
+    void should_handle_DataAccessException_in_onProductionOrderCreated()
+            throws JsonProcessingException {
+        var event = new ProductionOrderCreatedMessage("O1", "F1", "P1", 10, 5, DATE);
+        when(objectMapper.writeValueAsString(eq(event))).thenReturn(JSON_PAYLOAD);
+        doThrow(new DataAccessException("DB Error") {})
+                .when(eventLogService)
+                .save(
+                        eq(EventType.PRODUCTION_ORDER_CREATED),
+                        eq(SourceService.FACTORY),
+                        eq(JSON_PAYLOAD),
+                        eq(5),
+                        eq(DATE));
+
+        assertThatThrownBy(() -> consumer.onProductionOrderCreated(event))
+                .isInstanceOf(DataAccessException.class);
+    }
+
+    @Test
+    void should_handle_JsonProcessingException_in_onProductionOrderStarted()
+            throws JsonProcessingException {
+        var event = new ProductionOrderStartedMessage("O1", "F1", 5, DATE);
+        when(objectMapper.writeValueAsString(eq(event)))
+                .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
+
+        consumer.onProductionOrderStarted(event);
+
+        verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
+    }
+
+    @Test
+    void should_handle_DataAccessException_in_onProductionOrderStarted()
+            throws JsonProcessingException {
+        var event = new ProductionOrderStartedMessage("O1", "F1", 5, DATE);
+        when(objectMapper.writeValueAsString(eq(event))).thenReturn(JSON_PAYLOAD);
+        doThrow(new DataAccessException("DB Error") {})
+                .when(eventLogService)
+                .save(
+                        eq(EventType.PRODUCTION_ORDER_STARTED),
+                        eq(SourceService.FACTORY),
+                        eq(JSON_PAYLOAD),
+                        eq(5),
+                        eq(DATE));
+
+        assertThatThrownBy(() -> consumer.onProductionOrderStarted(event))
+                .isInstanceOf(DataAccessException.class);
+    }
+
+    @Test
+    void should_handle_JsonProcessingException_in_onProductionOrderCompleted()
+            throws JsonProcessingException {
+        var event = new ProductionOrderCompletedMessage("O1", "F1", 5, DATE);
+        when(objectMapper.writeValueAsString(eq(event)))
+                .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
+
+        consumer.onProductionOrderCompleted(event);
+
+        verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
+    }
+
+    @Test
+    void should_handle_DataAccessException_in_onProductionOrderCompleted()
+            throws JsonProcessingException {
+        var event = new ProductionOrderCompletedMessage("O1", "F1", 5, DATE);
+        when(objectMapper.writeValueAsString(eq(event))).thenReturn(JSON_PAYLOAD);
+        doThrow(new DataAccessException("DB Error") {})
+                .when(eventLogService)
+                .save(
+                        eq(EventType.PRODUCTION_ORDER_COMPLETED),
+                        eq(SourceService.FACTORY),
+                        eq(JSON_PAYLOAD),
+                        eq(5),
+                        eq(DATE));
+
+        assertThatThrownBy(() -> consumer.onProductionOrderCompleted(event))
+                .isInstanceOf(DataAccessException.class);
+    }
+
+    @Test
+    void should_handle_JsonProcessingException_in_onProductionOrderBlocked()
+            throws JsonProcessingException {
+        var event = new ProductionOrderBlockedMessage(5, DATE);
+        when(objectMapper.writeValueAsString(eq(event)))
+                .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
+
+        consumer.onProductionOrderBlocked(event);
+
+        verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
+    }
+
+    @Test
+    void should_handle_DataAccessException_in_onProductionOrderBlocked()
+            throws JsonProcessingException {
+        var event = new ProductionOrderBlockedMessage(5, DATE);
+        when(objectMapper.writeValueAsString(eq(event))).thenReturn(JSON_PAYLOAD);
+        doThrow(new DataAccessException("DB Error") {})
+                .when(eventLogService)
+                .save(
+                        eq(EventType.PRODUCTION_ORDER_BLOCKED),
+                        eq(SourceService.FACTORY),
+                        eq(JSON_PAYLOAD),
+                        eq(5),
+                        eq(DATE));
+
+        assertThatThrownBy(() -> consumer.onProductionOrderBlocked(event))
+                .isInstanceOf(DataAccessException.class);
+    }
+
+    @Test
+    void should_handle_JsonProcessingException_in_onRecipeRegistered()
+            throws JsonProcessingException {
+        var event = new ProductionRecipeRegisteredMessage(5, DATE);
+        when(objectMapper.writeValueAsString(eq(event)))
+                .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
+
+        consumer.onRecipeRegistered(event);
+
+        verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
+    }
+
+    @Test
+    void should_handle_DataAccessException_in_onRecipeRegistered() throws JsonProcessingException {
+        var event = new ProductionRecipeRegisteredMessage(5, DATE);
+        when(objectMapper.writeValueAsString(eq(event))).thenReturn(JSON_PAYLOAD);
+        doThrow(new DataAccessException("DB Error") {})
+                .when(eventLogService)
+                .save(
+                        eq(EventType.PRODUCTION_RECIPE_REGISTERED),
+                        eq(SourceService.FACTORY),
+                        eq(JSON_PAYLOAD),
+                        eq(5),
+                        eq(DATE));
+
+        assertThatThrownBy(() -> consumer.onRecipeRegistered(event))
+                .isInstanceOf(DataAccessException.class);
+    }
+
+    @Test
+    void should_handle_JsonProcessingException_in_onFactoryRegistered()
+            throws JsonProcessingException {
+        var event = new ProductionFactoryRegisteredMessage(5, DATE);
+        when(objectMapper.writeValueAsString(eq(event)))
+                .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
+
+        consumer.onFactoryRegistered(event);
+
+        verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
+    }
+
+    @Test
+    void should_handle_DataAccessException_in_onFactoryRegistered() throws JsonProcessingException {
+        var event = new ProductionFactoryRegisteredMessage(5, DATE);
+        when(objectMapper.writeValueAsString(eq(event))).thenReturn(JSON_PAYLOAD);
+        doThrow(new DataAccessException("DB Error") {})
+                .when(eventLogService)
+                .save(
+                        eq(EventType.PRODUCTION_FACTORY_REGISTERED),
+                        eq(SourceService.FACTORY),
+                        eq(JSON_PAYLOAD),
+                        eq(5),
+                        eq(DATE));
+
+        assertThatThrownBy(() -> consumer.onFactoryRegistered(event))
+                .isInstanceOf(DataAccessException.class);
     }
 }

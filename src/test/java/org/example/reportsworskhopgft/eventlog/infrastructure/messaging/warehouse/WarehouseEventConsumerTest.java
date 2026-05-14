@@ -16,6 +16,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessException;
+
+import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 class WarehouseEventConsumerTest {
@@ -84,6 +87,105 @@ class WarehouseEventConsumerTest {
         String invalidJson = "esto-no-es-json";
 
         assertThatThrownBy(() -> consumer.onReplenishmentRequested(invalidJson))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Error processing replenishment.requested.v1");
+    }
+
+    @Test
+    void should_throw_data_access_exception_when_warehouse_stock_changed_db_fails() {
+        String validJson =
+                """
+                {
+                  "productId": "abc-123",
+                  "quantity": 50,
+                  "type": "INCREASE"
+                }
+                """;
+
+        doThrow(new DataAccessException("DB Error") {})
+                .when(eventLogServiceImpl)
+                .save(
+                        eq(EventType.WAREHOUSE_STOCK_CHANGED),
+                        eq(SourceService.WAREHOUSE),
+                        any(String.class),
+                        eq(0),
+                        eq(""));
+
+        assertThatThrownBy(() -> consumer.onWarehouseStockChanged(validJson))
+                .isInstanceOf(DataAccessException.class)
+                .hasMessage("DB Error");
+    }
+
+    @Test
+    void should_throw_data_access_exception_when_replenishment_requested_db_fails() {
+        String validJson =
+                """
+                {
+                  "productId": "abc-123",
+                  "quantity": 50,
+                  "type": "REPLENISHMENT"
+                }
+                """;
+
+        doThrow(new DataAccessException("DB Error") {})
+                .when(eventLogServiceImpl)
+                .save(
+                        eq(EventType.REPLENISHMENT_REQUESTED),
+                        eq(SourceService.WAREHOUSE),
+                        any(String.class),
+                        eq(0),
+                        eq(""));
+
+        assertThatThrownBy(() -> consumer.onReplenishmentRequested(validJson))
+                .isInstanceOf(DataAccessException.class)
+                .hasMessage("DB Error");
+    }
+    @Test
+    void should_throw_runtime_exception_when_warehouse_stock_changed_unexpected_error() {
+        String validJson =
+                """
+                {
+                  "productId": "abc-123",
+                  "quantity": 50,
+                  "type": "INCREASE"
+                }
+                """;
+
+        doThrow(new IllegalStateException("Unexpected Error"))
+                .when(eventLogServiceImpl)
+                .save(
+                        eq(EventType.WAREHOUSE_STOCK_CHANGED),
+                        eq(SourceService.WAREHOUSE),
+                        any(String.class),
+                        eq(0),
+                        eq(""));
+
+        assertThatThrownBy(() -> consumer.onWarehouseStockChanged(validJson))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessageContaining("Error processing warehouse.stock.changed.v1");
+    }
+
+    @Test
+    void should_throw_runtime_exception_when_replenishment_requested_unexpected_error() {
+        String validJson =
+                """
+                {
+                  "productId": "abc-123",
+                  "quantity": 50,
+                  "type": "REPLENISHMENT"
+                }
+                """;
+
+        doThrow(new IllegalStateException("Unexpected Error"))
+                .when(eventLogServiceImpl)
+                .save(
+                        eq(EventType.REPLENISHMENT_REQUESTED),
+                        eq(SourceService.WAREHOUSE),
+                        any(String.class),
+                        eq(0),
+                        eq(""));
+
+        assertThatThrownBy(() -> consumer.onReplenishmentRequested(validJson))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Error processing replenishment.requested.v1");
     }

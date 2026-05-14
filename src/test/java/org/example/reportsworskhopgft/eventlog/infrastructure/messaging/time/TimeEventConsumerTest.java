@@ -15,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataAccessException;
 
 @ExtendWith(MockitoExtension.class)
 class TimeEventConsumerTest {
@@ -60,5 +61,37 @@ class TimeEventConsumerTest {
         assertThatThrownBy(() -> consumer.onTimeAdvanced(event))
                 .isInstanceOf(RuntimeException.class)
                 .hasMessageContaining("Error processing time.advanced.v1");
+    }
+
+    @Test
+    void should_throw_exception_when_json_processing_fails() throws Exception {
+        TimeAdvancedMessage event = new TimeAdvancedMessage(5, "2024-02-01T10:00:00Z");
+
+        when(objectMapper.writeValueAsString(event))
+                .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
+
+        assertThatThrownBy(() -> consumer.onTimeAdvanced(event))
+                .isInstanceOf(RuntimeException.class)
+                .hasMessage("Error processing time.advanced.v1");
+    }
+
+    @Test
+    void should_throw_exception_when_data_access_fails() throws Exception {
+        TimeAdvancedMessage event = new TimeAdvancedMessage(5, "2024-02-01T10:00:00Z");
+
+        when(objectMapper.writeValueAsString(event)).thenReturn(event.toString());
+
+        doThrow(new DataAccessException("DB Error") {})
+                .when(eventLogServiceImpl)
+                .save(
+                        eq(EventType.TIME_ADVANCED),
+                        eq(SourceService.TIME),
+                        eq(event.toString()),
+                        eq(5),
+                        eq("2024-02-01T10:00:00Z"));
+
+        assertThatThrownBy(() -> consumer.onTimeAdvanced(event))
+                .isInstanceOf(DataAccessException.class)
+                .hasMessage("DB Error");
     }
 }
