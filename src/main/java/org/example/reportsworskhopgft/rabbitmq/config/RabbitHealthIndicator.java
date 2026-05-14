@@ -1,12 +1,11 @@
 package org.example.reportsworskhopgft.rabbitmq.config;
 
-import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.stereotype.Component;
 import lombok.RequiredArgsConstructor;
 import org.springframework.amqp.rabbit.connection.Connection;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-
+import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
@@ -24,9 +23,7 @@ public class RabbitHealthIndicator implements HealthIndicator {
                         .withDetail("port", connectionFactory.getPort())
                         .build();
             } else {
-                return Health.down()
-                        .withDetail("error", "Connection is closed")
-                        .build();
+                return Health.down().withDetail("error", "Connection is closed").build();
             }
         } catch (Exception e) {
             return Health.down()

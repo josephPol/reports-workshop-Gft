@@ -33,10 +33,6 @@ class EventLogServiceImplTest {
 
     @InjectMocks private EventLogServiceImpl eventLogService;
 
-    // ==========================================
-    // TESTS DE PERSISTENCIA (ESCRITURA)
-    // ==========================================
-
     @Test
     void should_find_all_events() {
         EventLogJPA jpaEvent =
@@ -103,13 +99,9 @@ class EventLogServiceImplTest {
         assertEquals(EventType.TRUCK_REGISTERED, captor.getValue().getEventType());
     }
 
-    // ==========================================
-    // TESTS DE REPORTING (LECTURA / MÉTRICAS)
-    // ==========================================
-
     @Test
     void should_calculate_system_stats_correctly() throws Exception {
-        // Arrange
+
         EventLogJPA orderCreated = new EventLogJPA();
         orderCreated.setEventType(EventType.PRODUCTION_ORDER_CREATED);
         EventLogJPA orderCompleted = new EventLogJPA();
@@ -134,16 +126,14 @@ class EventLogServiceImplTest {
                                 validTruck,
                                 corruptTruck));
 
-        // Mocks de Jackson
+
         JsonNode mockNode = new ObjectMapper().readTree(validTruck.getPayload());
         when(objectMapper.readTree(validTruck.getPayload())).thenReturn(mockNode);
         when(objectMapper.readTree(corruptTruck.getPayload()))
                 .thenThrow(new RuntimeException("Parse Error"));
 
-        // Act
         SystemStatsProjection stats = eventLogService.getSystemStats();
 
-        // Assert
         assertEquals(1, stats.totalOrders());
         assertEquals(1, stats.completedOrders());
         assertEquals(1, stats.blockedOrders());
@@ -152,7 +142,6 @@ class EventLogServiceImplTest {
 
     @Test
     void should_calculate_order_history_with_updates_and_errors() throws Exception {
-        // Arrange
         EventLogJPA event1 = new EventLogJPA();
         event1.setEventType(EventType.PRODUCTION_ORDER_CREATED);
         event1.setPayload("{\"orderId\":\"ORD-1\", \"factoryId\":\"FAC-A\"}");
@@ -183,7 +172,7 @@ class EventLogServiceImplTest {
         when(jpaRepository.findAll())
                 .thenReturn(List.of(event1, event2, event3, event4, corruptEvent, unrelatedEvent));
 
-        // Mocks de Jackson
+
         ObjectMapper realMapper = new ObjectMapper();
         when(objectMapper.readTree(event1.getPayload()))
                 .thenReturn(realMapper.readTree(event1.getPayload()));
@@ -196,28 +185,24 @@ class EventLogServiceImplTest {
         when(objectMapper.readTree(corruptEvent.getPayload()))
                 .thenThrow(new RuntimeException("Parse Error"));
 
-        // Act
         List<OrderHistoryProjection> history = eventLogService.getOrderHistory();
 
-        // Assert
-        assertEquals(3, history.size()); // Se han procesado ORD-1, ORD-2 y ORD-3
+        assertEquals(3, history.size());
 
-        // Verificamos ORD-1
         assertEquals("STARTED", history.get(0).status());
         assertEquals("FAC-A", history.get(0).factoryId());
 
-        // Verificamos ORD-2
+
         assertEquals("COMPLETED", history.get(1).status());
         assertEquals("N/A", history.get(1).factoryId());
 
-        // Verificamos ORD-3
+
         assertEquals("BLOCKED", history.get(2).status());
         assertEquals("FAC-B", history.get(2).factoryId());
     }
 
     @Test
     void should_return_unknown_for_unmapped_event_types() {
-        // Le pasamos un evento de camión a un mapeador de pedidos para forzar el "default"
         assertEquals("UNKNOWN", eventLogService.mapEventToStatus(EventType.TRUCK_REGISTERED));
     }
 }

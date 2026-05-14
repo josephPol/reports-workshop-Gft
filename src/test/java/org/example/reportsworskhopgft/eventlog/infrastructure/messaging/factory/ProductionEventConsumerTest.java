@@ -54,7 +54,6 @@ class ProductionEventConsumerTest {
 
     @Test
     void should_save_on_ProductionOrderStarted() {
-        // Ajustado a 4 argumentos según image_d183d7.png
         var event = new ProductionOrderStartedMessage("O1", "F1", 5, DATE);
 
         consumer.onProductionOrderStarted(event);
@@ -127,8 +126,6 @@ class ProductionEventConsumerTest {
                         5,
                         DATE);
     }
-
-    // --- TESTS PARA COBERTURA DE EXCEPCIONES (Bloques Catch) ---
 
     @Test
     void should_throw_exception_when_onProductionOrderCreated_fails()
