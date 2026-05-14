@@ -1,8 +1,7 @@
-package org.example.reportsworskhopgft.eventlog.infrastructure.messaging;
+package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.truck.TruckPositionUpdateEvent;
 import org.junit.jupiter.api.Test;
 
 class TruckPositionUpdateEventTest {

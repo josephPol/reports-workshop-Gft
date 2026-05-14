@@ -3,6 +3,7 @@ package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.warehou
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
@@ -17,8 +18,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.dao.DataAccessException;
-
-import static org.mockito.Mockito.doThrow;
 
 @ExtendWith(MockitoExtension.class)
 class WarehouseEventConsumerTest {
@@ -140,6 +139,7 @@ class WarehouseEventConsumerTest {
                 .isInstanceOf(DataAccessException.class)
                 .hasMessage("DB Error");
     }
+
     @Test
     void should_throw_runtime_exception_when_warehouse_stock_changed_unexpected_error() {
         String validJson =
