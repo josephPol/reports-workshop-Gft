@@ -1,5 +1,6 @@
 package org.example.reportsworskhopgft.eventlog.infrastructure.messaging.time;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -8,6 +9,7 @@ import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
 import org.example.reportsworskhopgft.rabbitmq.RabbitMQConfig;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -21,7 +23,7 @@ public class TimeEventConsumer {
     @RabbitListener(queues = RabbitMQConfig.TIME_ADVANCED_QUEUE_NAME)
     public void onTimeAdvanced(TimeAdvancedMessage event) {
         try {
-            log.info("Evento de producción recibido: {}", event);
+            log.info("Production event received: {}", event);
 
             String jsonPayload = objectMapper.writeValueAsString(event);
 
@@ -31,8 +33,14 @@ public class TimeEventConsumer {
                     jsonPayload,
                     event.simulationDay(),
                     String.valueOf(event.occurredAt()));
-        } catch (Exception e) {
-            log.error("Error processing time.advanced.v1: {}", event, e);
+        } catch (JsonProcessingException e) {
+            log.error("Error serializing event to JSON: {}", event, e);
+            throw new RuntimeException("Error processing time.advanced.v1", e);
+        } catch (DataAccessException e) {
+            log.error("Database error while saving log: {}", event, e);
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error processing production order: {}", event, e);
             throw new RuntimeException("Error processing time.advanced.v1", e);
         }
     }
