@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventDeserializationException;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventProcessingException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -55,7 +57,7 @@ class WarehouseEventConsumerTest {
         String invalidJson = "esto-no-es-json";
 
         assertThatThrownBy(() -> consumer.onWarehouseStockChanged(invalidJson))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(EventDeserializationException.class)
                 .hasMessageContaining("Error processing warehouse.stock.changed.v1");
     }
 
@@ -86,7 +88,7 @@ class WarehouseEventConsumerTest {
         String invalidJson = "esto-no-es-json";
 
         assertThatThrownBy(() -> consumer.onReplenishmentRequested(invalidJson))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(EventDeserializationException.class)
                 .hasMessageContaining("Error processing replenishment.requested.v1");
     }
 
@@ -161,7 +163,7 @@ class WarehouseEventConsumerTest {
                         eq(""));
 
         assertThatThrownBy(() -> consumer.onWarehouseStockChanged(validJson))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(EventProcessingException.class)
                 .hasMessageContaining("Error processing warehouse.stock.changed.v1");
     }
 
@@ -186,7 +188,7 @@ class WarehouseEventConsumerTest {
                         eq(""));
 
         assertThatThrownBy(() -> consumer.onReplenishmentRequested(validJson))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(EventProcessingException.class)
                 .hasMessageContaining("Error processing replenishment.requested.v1");
     }
 }

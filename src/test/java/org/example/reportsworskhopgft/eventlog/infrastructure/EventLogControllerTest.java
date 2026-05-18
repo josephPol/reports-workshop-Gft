@@ -8,6 +8,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.application.exception.EventLogNotFoundException;
 import org.example.reportsworskhopgft.eventlog.application.projections.OrderHistoryProjection;
 import org.example.reportsworskhopgft.eventlog.application.projections.SystemStatsProjection;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
@@ -74,6 +75,15 @@ class EventLogControllerTest {
                 .andExpect(jsonPath("$.eventType").value("TRUCK_REGISTERED"))
                 .andExpect(jsonPath("$.sourceService").value("TRANSPORT"))
                 .andExpect(jsonPath("$.simulationDay").value(1));
+    }
+
+    @Test
+    void should_return_404_when_event_is_not_found() throws Exception {
+        EventLogId id = EventLogId.generate();
+        when(eventLogService.findEventLogById(org.mockito.ArgumentMatchers.any()))
+                .thenThrow(new EventLogNotFoundException(id));
+
+        mockMvc.perform(get("/reports/" + id)).andExpect(status().isNotFound());
     }
 
     @Test

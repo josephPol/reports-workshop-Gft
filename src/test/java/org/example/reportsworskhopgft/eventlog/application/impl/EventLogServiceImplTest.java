@@ -8,6 +8,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Optional;
+import org.example.reportsworskhopgft.eventlog.application.exception.EventLogNotFoundException;
 import org.example.reportsworskhopgft.eventlog.application.projections.OrderHistoryProjection;
 import org.example.reportsworskhopgft.eventlog.application.projections.SystemStatsProjection;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
@@ -72,6 +73,15 @@ class EventLogServiceImplTest {
     }
 
     @Test
+    void should_throw_when_event_is_not_found() {
+        EventLogId domainId = new EventLogId("missing-id");
+        when(jpaRepository.findById(any(EventLogIdJPA.class))).thenReturn(Optional.empty());
+
+        assertThrows(
+                EventLogNotFoundException.class, () -> eventLogService.findEventLogById(domainId));
+    }
+
+    @Test
     void should_save_event_object() {
         EventLog domainEvent =
                 new EventLog(
@@ -126,7 +136,6 @@ class EventLogServiceImplTest {
                                 validTruck,
                                 corruptTruck));
 
-
         JsonNode mockNode = new ObjectMapper().readTree(validTruck.getPayload());
         when(objectMapper.readTree(validTruck.getPayload())).thenReturn(mockNode);
         when(objectMapper.readTree(corruptTruck.getPayload()))
@@ -172,7 +181,6 @@ class EventLogServiceImplTest {
         when(jpaRepository.findAll())
                 .thenReturn(List.of(event1, event2, event3, event4, corruptEvent, unrelatedEvent));
 
-
         ObjectMapper realMapper = new ObjectMapper();
         when(objectMapper.readTree(event1.getPayload()))
                 .thenReturn(realMapper.readTree(event1.getPayload()));
@@ -192,10 +200,8 @@ class EventLogServiceImplTest {
         assertEquals("STARTED", history.get(0).status());
         assertEquals("FAC-A", history.get(0).factoryId());
 
-
         assertEquals("COMPLETED", history.get(1).status());
         assertEquals("N/A", history.get(1).factoryId());
-
 
         assertEquals("BLOCKED", history.get(2).status());
         assertEquals("FAC-B", history.get(2).factoryId());

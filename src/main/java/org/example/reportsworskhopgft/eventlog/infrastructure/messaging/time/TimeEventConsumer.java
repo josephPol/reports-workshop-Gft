@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventProcessingException;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventSerializationException;
 import org.example.reportsworskhopgft.rabbitmq.RabbitMQConfig;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.dao.DataAccessException;
@@ -19,6 +21,7 @@ public class TimeEventConsumer {
 
     private final EventLogServiceImpl eventLogServiceImpl;
     private final ObjectMapper objectMapper;
+    private static final String EVENT_NAME = "time.advanced.v1";
 
     @RabbitListener(queues = RabbitMQConfig.TIME_ADVANCED_QUEUE_NAME)
     public void onTimeAdvanced(TimeAdvancedMessage event) {
@@ -35,13 +38,14 @@ public class TimeEventConsumer {
                     String.valueOf(event.occurredAt()));
         } catch (JsonProcessingException e) {
             log.error("Error serializing event to JSON: {}", event, e);
-            throw new RuntimeException("Error processing time.advanced.v1", e);
+            throw new EventSerializationException(
+                    EVENT_NAME, "Error processing time.advanced.v1", e);
         } catch (DataAccessException e) {
             log.error("Database error while saving log: {}", event, e);
             throw e;
         } catch (RuntimeException e) {
             log.error("Unexpected error processing production order: {}", event, e);
-            throw new RuntimeException("Error processing time.advanced.v1", e);
+            throw new EventProcessingException(EVENT_NAME, "Error processing time.advanced.v1", e);
         }
     }
 }

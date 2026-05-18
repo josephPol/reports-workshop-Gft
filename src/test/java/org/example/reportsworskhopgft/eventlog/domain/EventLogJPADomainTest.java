@@ -3,6 +3,8 @@ package org.example.reportsworskhopgft.eventlog.domain;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.UUID;
+import org.example.reportsworskhopgft.eventlog.domain.exception.EventLogIdNotUuidException;
+import org.example.reportsworskhopgft.eventlog.domain.exception.InvalidEventLogIdException;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogIdJPA;
 import org.example.reportsworskhopgft.eventlog.infrastructure.persistence.EventLogJPA;
 import org.junit.jupiter.api.Test;
@@ -19,8 +21,8 @@ class EventLogJPADomainTest {
 
     @Test
     void shouldRejectBlankIdentifierValues() {
-        assertThrows(IllegalArgumentException.class, () -> new EventLogId(" "));
-        assertThrows(IllegalArgumentException.class, () -> new EventLogId(null));
+        assertThrows(InvalidEventLogIdException.class, () -> new EventLogId(" "));
+        assertThrows(InvalidEventLogIdException.class, () -> new EventLogId(null));
     }
 
     @Test
@@ -41,7 +43,7 @@ class EventLogJPADomainTest {
     void should_throw_when_identifier_is_not_a_uuid() {
         EventLogId id = new EventLogId("not-a-uuid");
 
-        assertThrows(IllegalArgumentException.class, id::toUUID);
+        assertThrows(EventLogIdNotUuidException.class, id::toUUID);
     }
 
     @Test

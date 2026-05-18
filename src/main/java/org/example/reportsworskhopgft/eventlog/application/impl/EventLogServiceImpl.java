@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.*;
 import java.util.stream.Collectors;
 import org.example.reportsworskhopgft.eventlog.application.EventLogService;
+import org.example.reportsworskhopgft.eventlog.application.exception.EventLogNotFoundException;
 import org.example.reportsworskhopgft.eventlog.application.projections.OrderHistoryProjection;
 import org.example.reportsworskhopgft.eventlog.application.projections.SystemStatsProjection;
 import org.example.reportsworskhopgft.eventlog.domain.EventLog;
@@ -36,7 +37,10 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     public EventLog findEventLogById(EventLogId id) {
         EventLogIdJPA jpaId = new EventLogIdJPA(id.value());
-        return jpaRepository.findById(jpaId).map(this::mapToDomain).orElse(null);
+        return jpaRepository
+                .findById(jpaId)
+                .map(this::mapToDomain)
+                .orElseThrow(() -> new EventLogNotFoundException(id));
     }
 
     @Override

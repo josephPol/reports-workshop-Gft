@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventDeserializationException;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventProcessingException;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
@@ -21,26 +23,29 @@ public class WarehouseEventConsumer {
 
     @RabbitListener(queues = "warehouse.stock.changed.v1")
     public void onWarehouseStockChanged(String event) {
+        final String eventName = "warehouse.stock.changed.v1";
         try {
             log.info("Production event received: {}", event);
-            WarehouseStockChangedMessage event11 =
-                    objectMapper.readValue(event, WarehouseStockChangedMessage.class);
+            objectMapper.readValue(event, WarehouseStockChangedMessage.class);
             eventLogService.save(
                     EventType.WAREHOUSE_STOCK_CHANGED, SourceService.WAREHOUSE, event, 0, "");
         } catch (JsonProcessingException e) {
-            log.error("Error serializing event to JSON: {}", event, e);
-            throw new RuntimeException("Error processing warehouse.stock.changed.v1", e);
+            log.error("Error deserializing JSON event: {}", event, e);
+            throw new EventDeserializationException(
+                    eventName, "Error processing warehouse.stock.changed.v1", e);
         } catch (DataAccessException e) {
             log.error("Database error while saving log: {}", event, e);
             throw e;
         } catch (RuntimeException e) {
             log.error("Unexpected error processing production order: {}", event, e);
-            throw new RuntimeException("Error processing warehouse.stock.changed.v1", e);
+            throw new EventProcessingException(
+                    eventName, "Error processing warehouse.stock.changed.v1", e);
         }
     }
 
     @RabbitListener(queues = "replenishment.requested.v1")
     public void onReplenishmentRequested(String event) {
+        final String eventName = "replenishment.requested.v1";
         try {
             ReplenishmentRequestedMessage event11 =
                     objectMapper.readValue(event, ReplenishmentRequestedMessage.class);
@@ -51,14 +56,16 @@ public class WarehouseEventConsumer {
                     0,
                     "");
         } catch (JsonProcessingException e) {
-            log.error("Error serializing event to JSON: {}", event, e);
-            throw new RuntimeException("Error processing replenishment.requested.v1", e);
+            log.error("Error deserializing JSON event: {}", event, e);
+            throw new EventDeserializationException(
+                    eventName, "Error processing replenishment.requested.v1", e);
         } catch (DataAccessException e) {
             log.error("Database error while saving log: {}", event, e);
             throw e;
         } catch (RuntimeException e) {
             log.error("Unexpected error processing production order: {}", event, e);
-            throw new RuntimeException("Error processing replenishment.requested.v1", e);
+            throw new EventProcessingException(
+                    eventName, "Error processing replenishment.requested.v1", e);
         }
     }
 }

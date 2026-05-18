@@ -64,4 +64,15 @@ class RabbitHealthIndicatorTest {
         assertThat(health.getDetails()).containsEntry("error", "Could not reach CloudAMQP server");
         assertThat(health.getDetails()).containsEntry("message", "Connection timeout");
     }
+
+    @Test
+    void health_should_return_DOWN_when_connection_factory_returns_null() {
+        when(connectionFactory.createConnection()).thenReturn(null);
+
+        Health health = rabbitHealthIndicator.health();
+
+        assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+        assertThat(health.getDetails()).containsEntry("error", "Could not reach CloudAMQP server");
+        assertThat(health.getDetails()).containsKey("message");
+    }
 }

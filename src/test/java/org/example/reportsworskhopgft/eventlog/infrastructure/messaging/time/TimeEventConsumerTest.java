@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventProcessingException;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventSerializationException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -59,7 +61,7 @@ class TimeEventConsumerTest {
                         eq("2024-02-01T10:00:00Z"));
 
         assertThatThrownBy(() -> consumer.onTimeAdvanced(event))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(EventProcessingException.class)
                 .hasMessageContaining("Error processing time.advanced.v1");
     }
 
@@ -71,7 +73,7 @@ class TimeEventConsumerTest {
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
         assertThatThrownBy(() -> consumer.onTimeAdvanced(event))
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(EventSerializationException.class)
                 .hasMessage("Error processing time.advanced.v1");
     }
 
