@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import org.example.reportsworskhopgft.blockedorder.application.BlockedOrderService;
+import org.example.reportsworskhopgft.blockedorder.application.exception.BlockedOrderNotFoundException;
 import org.example.reportsworskhopgft.blockedorder.domain.BlockedOrder;
 import org.example.reportsworskhopgft.blockedorder.infrastructure.BlockedOrderRepositoryJPA;
 import org.example.reportsworskhopgft.blockedorder.infrastructure.persistence.BlockedOrderJPA;
@@ -28,7 +29,7 @@ public class BlockedOrderServiceImpl implements BlockedOrderService {
     @Override
     public BlockedOrder getBlockedOrderById(String id) {
         Optional<BlockedOrderJPA> found = blockedOrderRepositoryJPA.findById(id);
-        return found.map(this::toDomain).orElse(null);
+        return found.map(this::toDomain).orElseThrow(() -> new BlockedOrderNotFoundException(id));
     }
 
     private BlockedOrder toDomain(BlockedOrderJPA jpa) {

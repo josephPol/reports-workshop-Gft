@@ -1,13 +1,15 @@
 package org.example.reportsworskhopgft.eventlog.domain;
 
 import jakarta.persistence.Embeddable;
+import org.example.reportsworskhopgft.eventlog.domain.exception.EventLogIdNotUuidException;
+import org.example.reportsworskhopgft.eventlog.domain.exception.InvalidEventLogIdException;
 
 @Embeddable
 public record EventLogId(String value) {
 
     public EventLogId {
         if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("EventLogId cannot be blank");
+            throw new InvalidEventLogIdException(value);
         }
     }
 
@@ -16,7 +18,11 @@ public record EventLogId(String value) {
     }
 
     public java.util.UUID toUUID() {
-        return java.util.UUID.fromString(this.value);
+        try {
+            return java.util.UUID.fromString(this.value);
+        } catch (IllegalArgumentException e) {
+            throw new EventLogIdNotUuidException(this.value, e);
+        }
     }
 
     public String getValue() {

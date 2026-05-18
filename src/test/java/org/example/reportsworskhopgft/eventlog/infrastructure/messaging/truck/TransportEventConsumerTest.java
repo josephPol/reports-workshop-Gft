@@ -10,6 +10,8 @@ import java.util.UUID;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventProcessingException;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventSerializationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +38,6 @@ class TransportEventConsumerTest {
         // Por defecto, el mapper funciona bien para los tests de éxito
         // lenient().when(objectMapper.writeValueAsString(any())).thenReturn(JSON_PAYLOAD);
     }
-
 
     @Test
     void should_process_truck_registered_event_successfully() throws JsonProcessingException {
@@ -131,8 +132,8 @@ class TransportEventConsumerTest {
                 .thenThrow(new RuntimeException("Jackson Error"));
 
         assertThatThrownBy(() -> consumer.onTruckRegistered(event))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Error deserializing RabbitMQ event");
+                .isInstanceOf(EventProcessingException.class)
+                .hasMessage("Error processing RabbitMQ event");
     }
 
     @Test
@@ -144,8 +145,8 @@ class TransportEventConsumerTest {
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
         assertThatThrownBy(() -> consumer.onTruckRegistered(event))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Error deserializing RabbitMQ event");
+                .isInstanceOf(EventSerializationException.class)
+                .hasMessage("Error serializing RabbitMQ event");
     }
 
     @Test
@@ -177,8 +178,8 @@ class TransportEventConsumerTest {
                 .thenThrow(new RuntimeException("Jackson Error"));
 
         assertThatThrownBy(() -> consumer.onTruckPositionUpdate(event))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Error deserializing RabbitMQ event");
+                .isInstanceOf(EventProcessingException.class)
+                .hasMessage("Error processing RabbitMQ event");
     }
 
     @Test
@@ -189,8 +190,8 @@ class TransportEventConsumerTest {
                 .thenThrow(new RuntimeException("Jackson Error"));
 
         assertThatThrownBy(() -> consumer.onTruckStatusChanged(event))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Error deserializing RabbitMQ event");
+                .isInstanceOf(EventProcessingException.class)
+                .hasMessage("Error processing RabbitMQ event");
     }
 
     @Test
@@ -201,8 +202,8 @@ class TransportEventConsumerTest {
                 .thenThrow(new RuntimeException("Jackson Error"));
 
         assertThatThrownBy(() -> consumer.onDeliveryCompleted(event))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Error deserializing RabbitMQ event");
+                .isInstanceOf(EventProcessingException.class)
+                .hasMessage("Error processing RabbitMQ event");
     }
 
     @Test
@@ -279,8 +280,8 @@ class TransportEventConsumerTest {
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
         assertThatThrownBy(() -> consumer.onTruckPositionUpdate(event))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Error deserializing RabbitMQ event");
+                .isInstanceOf(EventSerializationException.class)
+                .hasMessage("Error serializing RabbitMQ event");
     }
 
     @Test
@@ -292,8 +293,8 @@ class TransportEventConsumerTest {
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
         assertThatThrownBy(() -> consumer.onTruckStatusChanged(event))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Error deserializing RabbitMQ event");
+                .isInstanceOf(EventSerializationException.class)
+                .hasMessage("Error serializing RabbitMQ event");
     }
 
     @Test
@@ -305,7 +306,7 @@ class TransportEventConsumerTest {
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
         assertThatThrownBy(() -> consumer.onDeliveryCompleted(event))
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("Error deserializing RabbitMQ event");
+                .isInstanceOf(EventSerializationException.class)
+                .hasMessage("Error serializing RabbitMQ event");
     }
 }

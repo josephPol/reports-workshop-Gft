@@ -1,10 +1,12 @@
 package org.example.reportsworskhopgft.blockedorder.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
 import java.util.Optional;
+import org.example.reportsworskhopgft.blockedorder.application.exception.BlockedOrderNotFoundException;
 import org.example.reportsworskhopgft.blockedorder.application.impl.BlockedOrderServiceImpl;
 import org.example.reportsworskhopgft.blockedorder.domain.BlockedOrder;
 import org.example.reportsworskhopgft.blockedorder.infrastructure.persistence.BlockedOrderJPA;
@@ -37,12 +39,12 @@ class BlockedOrderServiceImplTest {
     }
 
     @Test
-    void should_return_null_when_getBlockedOrderById_is_called_and_not_found() {
+    void should_throw_when_getBlockedOrderById_is_called_and_not_found() {
         when(blockedOrderRepositoryJPA.findById("missing")).thenReturn(Optional.empty());
 
-        BlockedOrder result = service.getBlockedOrderById("missing");
-
-        assertThat(result).isNull();
+        assertThatThrownBy(() -> service.getBlockedOrderById("missing"))
+                .isInstanceOf(BlockedOrderNotFoundException.class)
+                .hasMessageContaining("missing");
     }
 
     @Test

@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworskhopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworskhopgft.eventlog.domain.EventType;
 import org.example.reportsworskhopgft.eventlog.domain.SourceService;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventProcessingException;
+import org.example.reportsworskhopgft.eventlog.infrastructure.messaging.exception.EventSerializationException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -133,7 +135,8 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(any())).thenThrow(new RuntimeException("JSON Error"));
         var event = new ProductionOrderCreatedMessage("O1", "F1", "P1", 10, 5, DATE);
 
-        assertThrows(RuntimeException.class, () -> consumer.onProductionOrderCreated(event));
+        assertThrows(
+                EventProcessingException.class, () -> consumer.onProductionOrderCreated(event));
     }
 
     @Test
@@ -142,7 +145,8 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(any())).thenThrow(new RuntimeException("JSON Error"));
         var event = new ProductionOrderStartedMessage("O1", "F1", 5, DATE);
 
-        assertThrows(RuntimeException.class, () -> consumer.onProductionOrderStarted(event));
+        assertThrows(
+                EventProcessingException.class, () -> consumer.onProductionOrderStarted(event));
     }
 
     @Test
@@ -151,7 +155,8 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(any())).thenThrow(new RuntimeException("JSON Error"));
         var event = new ProductionOrderCompletedMessage("O1", "F1", 5, DATE);
 
-        assertThrows(RuntimeException.class, () -> consumer.onProductionOrderCompleted(event));
+        assertThrows(
+                EventProcessingException.class, () -> consumer.onProductionOrderCompleted(event));
     }
 
     @Test
@@ -160,7 +165,8 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(any())).thenThrow(new RuntimeException("JSON Error"));
         var event = new ProductionOrderBlockedMessage(5, DATE);
 
-        assertThrows(RuntimeException.class, () -> consumer.onProductionOrderBlocked(event));
+        assertThrows(
+                EventProcessingException.class, () -> consumer.onProductionOrderBlocked(event));
     }
 
     @Test
@@ -168,7 +174,7 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(any())).thenThrow(new RuntimeException("JSON Error"));
         var event = new ProductionRecipeRegisteredMessage(5, DATE);
 
-        assertThrows(RuntimeException.class, () -> consumer.onRecipeRegistered(event));
+        assertThrows(EventProcessingException.class, () -> consumer.onRecipeRegistered(event));
     }
 
     @Test
@@ -176,7 +182,7 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(any())).thenThrow(new RuntimeException("JSON Error"));
         var event = new ProductionFactoryRegisteredMessage(5, DATE);
 
-        assertThrows(RuntimeException.class, () -> consumer.onFactoryRegistered(event));
+        assertThrows(EventProcessingException.class, () -> consumer.onFactoryRegistered(event));
     }
 
     @Test
@@ -186,7 +192,8 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(eq(event)))
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
-        consumer.onProductionOrderCreated(event);
+        assertThatThrownBy(() -> consumer.onProductionOrderCreated(event))
+                .isInstanceOf(EventSerializationException.class);
 
         verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
     }
@@ -216,7 +223,8 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(eq(event)))
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
-        consumer.onProductionOrderStarted(event);
+        assertThatThrownBy(() -> consumer.onProductionOrderStarted(event))
+                .isInstanceOf(EventSerializationException.class);
 
         verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
     }
@@ -246,7 +254,8 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(eq(event)))
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
-        consumer.onProductionOrderCompleted(event);
+        assertThatThrownBy(() -> consumer.onProductionOrderCompleted(event))
+                .isInstanceOf(EventSerializationException.class);
 
         verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
     }
@@ -276,7 +285,8 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(eq(event)))
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
-        consumer.onProductionOrderBlocked(event);
+        assertThatThrownBy(() -> consumer.onProductionOrderBlocked(event))
+                .isInstanceOf(EventSerializationException.class);
 
         verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
     }
@@ -306,7 +316,8 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(eq(event)))
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
-        consumer.onRecipeRegistered(event);
+        assertThatThrownBy(() -> consumer.onRecipeRegistered(event))
+                .isInstanceOf(EventSerializationException.class);
 
         verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
     }
@@ -335,7 +346,8 @@ class ProductionEventConsumerTest {
         when(objectMapper.writeValueAsString(eq(event)))
                 .thenThrow(new com.fasterxml.jackson.databind.JsonMappingException("JSON Error"));
 
-        consumer.onFactoryRegistered(event);
+        assertThatThrownBy(() -> consumer.onFactoryRegistered(event))
+                .isInstanceOf(EventSerializationException.class);
 
         verify(eventLogService, never()).save(any(), any(), any(), anyInt(), any());
     }
