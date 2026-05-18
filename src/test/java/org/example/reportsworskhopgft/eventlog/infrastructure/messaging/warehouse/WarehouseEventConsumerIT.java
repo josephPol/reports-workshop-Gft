@@ -77,4 +77,30 @@ class WarehouseEventConsumerIT extends AbstractIntegrationTest {
                                                             .isEqualTo("WAREHOUSE");
                                                 }));
     }
+
+    @Test
+    void should_persist_event_log_when_warehouse_order_blocked_message_is_received() {
+        String message =
+                """
+                {
+                  "orderId": "123e4567-e89b-12d3-a456-426614174000"
+                }
+                """;
+
+        rabbitTemplate.convertAndSend("warehouse.order.blocked.v1", message);
+
+        await().atMost(5, TimeUnit.SECONDS)
+                .untilAsserted(
+                        () ->
+                                assertThat(eventLogRepository.findAll())
+                                        .hasSize(1)
+                                        .first()
+                                        .satisfies(
+                                                log -> {
+                                                    assertThat(log.getEventType())
+                                                            .isEqualTo("WAREHOUSE_ORDER_BLOCKED");
+                                                    assertThat(log.getSourceService())
+                                                            .isEqualTo("WAREHOUSE");
+                                                }));
+    }
 }

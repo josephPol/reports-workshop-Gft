@@ -191,4 +191,79 @@ class WarehouseEventConsumerTest {
                 .isInstanceOf(EventProcessingException.class)
                 .hasMessageContaining("Error processing replenishment.requested.v1");
     }
+
+    @Test
+    void should_process_warehouse_order_blocked_event() {
+        String validJson =
+                """
+                {
+                  "orderId": "123e4567-e89b-12d3-a456-426614174000"
+                }
+                """;
+
+        consumer.onWarehouseOrderBlocked(validJson);
+
+        verify(eventLogServiceImpl, times(1))
+                .save(
+                        eq(EventType.WAREHOUSE_ORDER_BLOCKED),
+                        eq(SourceService.WAREHOUSE),
+                        any(String.class),
+                        eq(0),
+                        eq(""));
+    }
+
+    @Test
+    void should_throw_exception_when_warehouse_order_blocked_message_is_invalid() {
+        String invalidJson = "not-valid-json";
+
+        assertThatThrownBy(() -> consumer.onWarehouseOrderBlocked(invalidJson))
+                .isInstanceOf(EventDeserializationException.class)
+                .hasMessageContaining("Error processing warehouse.order.blocked.v1");
+    }
+
+    @Test
+    void should_throw_data_access_exception_when_warehouse_order_blocked_db_fails() {
+        String validJson =
+                """
+                {
+                  "orderId": "123e4567-e89b-12d3-a456-426614174000"
+                }
+                """;
+
+        doThrow(new DataAccessException("DB Error") {})
+                .when(eventLogServiceImpl)
+                .save(
+                        eq(EventType.WAREHOUSE_ORDER_BLOCKED),
+                        eq(SourceService.WAREHOUSE),
+                        any(String.class),
+                        eq(0),
+                        eq(""));
+
+        assertThatThrownBy(() -> consumer.onWarehouseOrderBlocked(validJson))
+                .isInstanceOf(DataAccessException.class)
+                .hasMessage("DB Error");
+    }
+
+    @Test
+    void should_throw_runtime_exception_when_warehouse_order_blocked_unexpected_error() {
+        String validJson =
+                """
+                {
+                  "orderId": "123e4567-e89b-12d3-a456-426614174000"
+                }
+                """;
+
+        doThrow(new IllegalStateException("Unexpected Error"))
+                .when(eventLogServiceImpl)
+                .save(
+                        eq(EventType.WAREHOUSE_ORDER_BLOCKED),
+                        eq(SourceService.WAREHOUSE),
+                        any(String.class),
+                        eq(0),
+                        eq(""));
+
+        assertThatThrownBy(() -> consumer.onWarehouseOrderBlocked(validJson))
+                .isInstanceOf(EventProcessingException.class)
+                .hasMessageContaining("Error processing warehouse.order.blocked.v1");
+    }
 }
