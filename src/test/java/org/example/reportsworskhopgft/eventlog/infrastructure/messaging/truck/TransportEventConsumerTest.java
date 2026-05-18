@@ -37,7 +37,6 @@ class TransportEventConsumerTest {
         // lenient().when(objectMapper.writeValueAsString(any())).thenReturn(JSON_PAYLOAD);
     }
 
-
     @Test
     void should_process_truck_registered_event_successfully() throws JsonProcessingException {
 

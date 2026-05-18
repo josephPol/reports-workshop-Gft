@@ -126,7 +126,6 @@ class EventLogServiceImplTest {
                                 validTruck,
                                 corruptTruck));
 
-
         JsonNode mockNode = new ObjectMapper().readTree(validTruck.getPayload());
         when(objectMapper.readTree(validTruck.getPayload())).thenReturn(mockNode);
         when(objectMapper.readTree(corruptTruck.getPayload()))
@@ -172,7 +171,6 @@ class EventLogServiceImplTest {
         when(jpaRepository.findAll())
                 .thenReturn(List.of(event1, event2, event3, event4, corruptEvent, unrelatedEvent));
 
-
         ObjectMapper realMapper = new ObjectMapper();
         when(objectMapper.readTree(event1.getPayload()))
                 .thenReturn(realMapper.readTree(event1.getPayload()));
@@ -192,10 +190,8 @@ class EventLogServiceImplTest {
         assertEquals("STARTED", history.get(0).status());
         assertEquals("FAC-A", history.get(0).factoryId());
 
-
         assertEquals("COMPLETED", history.get(1).status());
         assertEquals("N/A", history.get(1).factoryId());
-
 
         assertEquals("BLOCKED", history.get(2).status());
         assertEquals("FAC-B", history.get(2).factoryId());
