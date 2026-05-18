@@ -25,29 +25,33 @@ class RabbitHealthIndicatorTest {
 
     @Test
     void health_should_return_UP_when_connection_is_open() {
-
+        // GIVEN
         when(connectionFactory.createConnection()).thenReturn(connection);
         when(connection.isOpen()).thenReturn(true);
         when(connectionFactory.getHost()).thenReturn("cloudamqp-server");
         when(connectionFactory.getPort()).thenReturn(5672);
 
+        // WHEN
         Health health = rabbitHealthIndicator.health();
 
+        // THEN
         assertThat(health.getStatus()).isEqualTo(Status.UP);
         assertThat(health.getDetails()).containsEntry("status", "Connected to CloudAMQP");
         assertThat(health.getDetails()).containsEntry("host", "cloudamqp-server");
         assertThat(health.getDetails()).containsEntry("port", 5672);
-        verify(connection).close();
+        verify(connection).close(); // Verifica que se cierra la conexión (try-with-resources)
     }
 
     @Test
     void health_should_return_DOWN_when_connection_is_closed() {
-
+        // GIVEN
         when(connectionFactory.createConnection()).thenReturn(connection);
         when(connection.isOpen()).thenReturn(false);
 
+        // WHEN
         Health health = rabbitHealthIndicator.health();
 
+        // THEN
         assertThat(health.getStatus()).isEqualTo(Status.DOWN);
         assertThat(health.getDetails()).containsEntry("error", "Connection is closed");
         verify(connection).close();
