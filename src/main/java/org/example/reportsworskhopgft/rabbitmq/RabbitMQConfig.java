@@ -63,6 +63,7 @@ public class RabbitMQConfig {
     public static final String DELIVERY_CREATED = "delivery.created.v1";
     public static final String WAREHOUSE_STOCK_CHANGED = "warehouse.stock.changed.v1";
     public static final String REPLENISHMENT_REQUESTED = "replenishment.requested.v1";
+    public static final String WAREHOUSE_ORDER_BLOCKED = "warehouse.order.blocked.v1";
 
     @Bean
     public TopicExchange timeExchange() {
@@ -261,6 +262,18 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(factoryRegisteredQueue())
                 .to(productionExchange())
                 .with(FACTORY_REGISTERED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Queue warehouseOrderBlockedQueue() {
+        return new Queue(WAREHOUSE_ORDER_BLOCKED, true);
+    }
+
+    @Bean
+    public Binding warehouseOrderBlockedBinding() {
+        return BindingBuilder.bind(warehouseOrderBlockedQueue())
+                .to(warehouseExchange())
+                .with(WAREHOUSE_ORDER_BLOCKED);
     }
 
     @Bean
