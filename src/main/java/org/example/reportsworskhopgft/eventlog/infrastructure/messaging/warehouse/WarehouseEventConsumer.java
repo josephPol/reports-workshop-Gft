@@ -68,4 +68,29 @@ public class WarehouseEventConsumer {
                     eventName, "Error processing replenishment.requested.v1", e);
         }
     }
+
+    @RabbitListener(queues = "warehouse.order.blocked.v1")
+    public void onWarehouseOrderBlocked(String event) {
+        final String eventName = "warehouse.order.blocked.v1";
+        try {
+            log.info("Warehouse blocked order event received: {}", event);
+            // Validamos que el JSON tiene el formato correcto mapeándolo al record que creaste
+            objectMapper.readValue(event, WarehouseOrderBlockedEvent.class);
+
+            // Guardamos el JSON crudo en la base de datos
+            eventLogService.save(
+                    EventType.WAREHOUSE_ORDER_BLOCKED, SourceService.WAREHOUSE, event, 0, "");
+        } catch (JsonProcessingException e) {
+            log.error("Error deserializing JSON event: {}", event, e);
+            throw new EventDeserializationException(
+                    eventName, "Error processing warehouse.order.blocked.v1", e);
+        } catch (DataAccessException e) {
+            log.error("Database error while saving log: {}", event, e);
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error processing blocked order: {}", event, e);
+            throw new EventProcessingException(
+                    eventName, "Error processing warehouse.order.blocked.v1", e);
+        }
+    }
 }
