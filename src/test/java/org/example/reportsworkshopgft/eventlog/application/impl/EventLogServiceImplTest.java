@@ -24,6 +24,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class EventLogServiceImplTest {
@@ -50,6 +54,26 @@ class EventLogServiceImplTest {
 
         assertEquals(1, result.size());
         assertEquals("1", result.get(0).getId().value());
+    }
+
+    @Test
+    void should_find_all_events_paged() {
+        EventLogJPA jpaEvent =
+                new EventLogJPA(
+                        new EventLogIdJPA("1"),
+                        EventType.TRUCK_REGISTERED,
+                        SourceService.TRANSPORT,
+                        "{}",
+                        1,
+                        "2026-05-11");
+        Pageable pageable = PageRequest.of(0, 10);
+        when(jpaRepository.findAll(pageable))
+                .thenReturn(new PageImpl<>(List.of(jpaEvent), pageable, 1));
+
+        Page<EventLog> result = eventLogService.findAllEventsLogs(pageable);
+
+        assertEquals(1, result.getTotalElements());
+        assertEquals("1", result.getContent().get(0).getId().value());
     }
 
     @Test
@@ -141,7 +165,6 @@ class EventLogServiceImplTest {
         eventLogService.save(
                 EventType.TRUCK_REGISTERED, SourceService.TRANSPORT, "{}", 1, "2026-05-11");
 
-        // Capturamos lo que se le pasa al repositorio para verificar que se construyó bien
         ArgumentCaptor<EventLogJPA> captor = ArgumentCaptor.forClass(EventLogJPA.class);
         verify(jpaRepository, times(1)).save(captor.capture());
 
@@ -245,10 +268,10 @@ class EventLogServiceImplTest {
 
         EventLogJPA corruptEvent = new EventLogJPA();
         corruptEvent.setEventType(EventType.PRODUCTION_ORDER_STARTED);
-        corruptEvent.setPayload("corrupt"); // Para cubrir el catch
+        corruptEvent.setPayload("corrupt");
 
         EventLogJPA unrelatedEvent = new EventLogJPA();
-        unrelatedEvent.setEventType(EventType.TRUCK_REGISTERED); // Para cubrir el false del if
+        unrelatedEvent.setEventType(EventType.TRUCK_REGISTERED);
 
         when(jpaRepository.findAll())
                 .thenReturn(List.of(event1, event2, event3, event4, corruptEvent, unrelatedEvent));
@@ -277,6 +300,60 @@ class EventLogServiceImplTest {
 
         assertEquals("BLOCKED", history.get(2).status());
         assertEquals("FAC-B", history.get(2).factoryId());
+    }
+
+    @Test
+    void should_return_order_history_paged_when_page_has_content() throws Exception {
+        EventLogJPA event1 = new EventLogJPA();
+        event1.setEventType(EventType.PRODUCTION_ORDER_CREATED);
+        event1.setPayload("{\"orderId\":\"ORD-1\", \"factoryId\":\"FAC-A\"}");
+        event1.setSimulationDay(1);
+
+        EventLogJPA event2 = new EventLogJPA();
+        event2.setEventType(EventType.PRODUCTION_ORDER_STARTED);
+        event2.setPayload("{\"orderId\":\"ORD-1\"}");
+        event2.setSimulationDay(2);
+
+        EventLogJPA event3 = new EventLogJPA();
+        event3.setEventType(EventType.PRODUCTION_ORDER_COMPLETED);
+        event3.setPayload("{\"orderId\":\"ORD-2\"}");
+        event3.setSimulationDay(3);
+
+        when(jpaRepository.findAll()).thenReturn(List.of(event1, event2, event3));
+
+        ObjectMapper realMapper = new ObjectMapper();
+        when(objectMapper.readTree(event1.getPayload()))
+                .thenReturn(realMapper.readTree(event1.getPayload()));
+        when(objectMapper.readTree(event2.getPayload()))
+                .thenReturn(realMapper.readTree(event2.getPayload()));
+        when(objectMapper.readTree(event3.getPayload()))
+                .thenReturn(realMapper.readTree(event3.getPayload()));
+
+        Page<OrderHistoryProjection> page = eventLogService.getOrderHistory(0, 2);
+
+        assertEquals(2, page.getContent().size());
+        assertEquals(2, page.getTotalElements());
+        assertEquals("STARTED", page.getContent().get(0).status());
+        assertEquals("COMPLETED", page.getContent().get(1).status());
+    }
+
+    @Test
+    void should_return_empty_order_history_paged_when_page_is_out_of_range() throws Exception {
+        EventLogJPA event1 = new EventLogJPA();
+        event1.setEventType(EventType.PRODUCTION_ORDER_CREATED);
+        event1.setPayload("{\"orderId\":\"ORD-1\", \"factoryId\":\"FAC-A\"}");
+        event1.setSimulationDay(1);
+
+        when(jpaRepository.findAll()).thenReturn(List.of(event1));
+
+        ObjectMapper realMapper = new ObjectMapper();
+        when(objectMapper.readTree(event1.getPayload()))
+                .thenReturn(realMapper.readTree(event1.getPayload()));
+
+        Page<OrderHistoryProjection> page = eventLogService.getOrderHistory(1, 50);
+
+        assertTrue(page.getContent().isEmpty());
+        assertEquals(1, page.getTotalElements());
     }
 
     @Test

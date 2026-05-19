@@ -16,6 +16,8 @@ import org.example.reportsworkshopgft.eventlog.domain.SourceService;
 import org.example.reportsworkshopgft.eventlog.infrastructure.EventLogRepositoryJPA;
 import org.example.reportsworkshopgft.eventlog.infrastructure.persistence.EventLogIdJPA;
 import org.example.reportsworkshopgft.eventlog.infrastructure.persistence.EventLogJPA;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,6 +35,10 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     public List<EventLog> findAllEventsLogs() {
         return jpaRepository.findAll().stream().map(this::mapToDomain).collect(Collectors.toList());
+    }
+
+    public Page<EventLog> findAllEventsLogs(Pageable pageable) {
+        return jpaRepository.findAll(pageable).map(this::mapToDomain);
     }
 
     @Override
@@ -54,6 +60,23 @@ public class EventLogServiceImpl implements EventLogService {
     @Override
     public List<OrderHistoryProjection> getOrderHistory() {
         List<EventLogJPA> allEvents = jpaRepository.findAll();
+        return buildOrderHistoryMap(allEvents);
+    }
+
+    public Page<OrderHistoryProjection> getOrderHistory(int page, int size) {
+        List<EventLogJPA> allEvents = jpaRepository.findAll();
+        List<OrderHistoryProjection> allHistory = buildOrderHistoryMap(allEvents);
+        int start = page * size;
+        int end = Math.min(start + size, allHistory.size());
+        List<OrderHistoryProjection> pageContent =
+                start >= allHistory.size() ? List.of() : allHistory.subList(start, end);
+        return new org.springframework.data.domain.PageImpl<>(
+                pageContent,
+                org.springframework.data.domain.PageRequest.of(page, size),
+                allHistory.size());
+    }
+
+    private List<OrderHistoryProjection> buildOrderHistoryMap(List<EventLogJPA> allEvents) {
 
         Map<String, OrderHistoryProjection> historyMap = new LinkedHashMap<>();
 

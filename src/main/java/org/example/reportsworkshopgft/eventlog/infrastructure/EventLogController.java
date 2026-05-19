@@ -1,8 +1,8 @@
 package org.example.reportsworkshopgft.eventlog.infrastructure;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworkshopgft.eventlog.application.EventLogService;
@@ -10,6 +10,7 @@ import org.example.reportsworkshopgft.eventlog.application.projections.OrderHist
 import org.example.reportsworkshopgft.eventlog.application.projections.SystemStatsProjection;
 import org.example.reportsworkshopgft.eventlog.domain.EventLog;
 import org.example.reportsworkshopgft.eventlog.domain.EventLogId;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -28,12 +29,25 @@ public class EventLogController {
     @GetMapping({"/", ""})
     @ResponseStatus(HttpStatus.OK)
     @Operation(
-            summary = "Get all event logs",
-            description = "Returns the complete event sourcing log of all system activities.")
-    public List<EventLog> getAllEventLogs() {
-        List<EventLog> eventLogJPAList = eventLogService.findAllEventsLogs();
-        log.info("Events found: {}", eventLogJPAList.size());
-        return eventLogJPAList;
+            summary = "Get all event logs (paginated)",
+            description =
+                    "Returns paginated event sourcing log of all system activities. Supports sorting and custom page sizes.")
+    public Page<EventLog> getAllEventLogs(
+            @Parameter(description = "Page number (0-indexed)", example = "0")
+                    @RequestParam(defaultValue = "0")
+                    int page,
+            @Parameter(description = "Page size (number of records per page)", example = "20")
+                    @RequestParam(defaultValue = "20")
+                    int size) {
+        log.info("Fetching events - page: {}, size: {}", page, size);
+        Page<EventLog> eventPage =
+                eventLogService.findAllEventsLogs(
+                        org.springframework.data.domain.PageRequest.of(page, size));
+        log.info(
+                "Events found: {} total, {} on this page",
+                eventPage.getTotalElements(),
+                eventPage.getNumberOfElements());
+        return eventPage;
     }
 
     @GetMapping("/{reports_id}")
@@ -57,11 +71,22 @@ public class EventLogController {
 
     @GetMapping("/orders/history")
     @Operation(
-            summary = "Get order history",
+            summary = "Get order history (paginated)",
             description =
-                    "Returns the most recent status of each production order, unifying events by ID.")
-    public ResponseEntity<List<OrderHistoryProjection>> getOrderHistory() {
-        List<OrderHistoryProjection> history = eventLogService.getOrderHistory();
+                    "Returns paginated order status history with most recent status of each order. Supports pagination for large result sets.")
+    public ResponseEntity<Page<OrderHistoryProjection>> getOrderHistory(
+            @Parameter(description = "Page number (0-indexed)", example = "0")
+                    @RequestParam(defaultValue = "0")
+                    int page,
+            @Parameter(description = "Page size (number of records per page)", example = "50")
+                    @RequestParam(defaultValue = "50")
+                    int size) {
+        log.info("Fetching order history - page: {}, size: {}", page, size);
+        Page<OrderHistoryProjection> history = eventLogService.getOrderHistory(page, size);
+        log.info(
+                "Order history retrieved: {} total, {} on this page",
+                history.getTotalElements(),
+                history.getNumberOfElements());
         return ResponseEntity.ok(history);
     }
 }

@@ -35,7 +35,6 @@ class ProductionEventConsumerTest {
 
     @BeforeEach
     void setUp() throws JsonProcessingException {
-        // Comportamiento por defecto para que todos los tests de éxito funcionen
         lenient().when(objectMapper.writeValueAsString(any())).thenReturn(JSON_PAYLOAD);
     }
 
