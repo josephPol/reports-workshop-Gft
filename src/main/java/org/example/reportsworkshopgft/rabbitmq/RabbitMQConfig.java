@@ -15,12 +15,9 @@ public class RabbitMQConfig {
     public static final String PRODUCTION_EXCHANGE = "production.exchange";
     public static final String WAREHOUSE_EXCHANGE = "warehouses.exchange";
 
-    // RabbitMQ from Time/Map (1 Event)
     public static final String TIME_ADVANCED_ROUTING_KEY = "time.advanced.v1";
     public static final String TIME_ADVANCED_QUEUE_NAME = "reports.time.advanced.v1";
-    // --------------------------------------
 
-    // RabbitMQ from truck (4 Events)
     public static final String TRUCK_REGISTERED_ROUTING_KEY = "truck.registered.v1";
     public static final String TRUCK_REGISTERED_QUEUE_NAME = "reports.truck.registered.v1";
 
@@ -33,9 +30,7 @@ public class RabbitMQConfig {
 
     public static final String TRUCK_STATUS_CHANGED_ROUTING_KEY = "truck.status.changed.v1";
     public static final String TRUCK_STATUS_CHANGED_QUEUE_NAME = "reports.truck.status.changed.v1";
-    // --------------------------------------
 
-    // RabbitMQ from Factory (6 Events)
     public static final String PRODUCTION_ORDER_CREATED_ROUTING_KEY = "production.order.created.v1";
     public static final String PRODUCTION_ORDER_CREATED_QUEUE_NAME =
             "reports.production.order.create.v1";
@@ -58,7 +53,6 @@ public class RabbitMQConfig {
 
     public static final String FACTORY_REGISTERED_ROUTING_KEY = "factory.registered.v1";
     public static final String FACTORY_REGISTERED_QUEUE_NAME = "reports.factory.registered.v1";
-    // --------------------------------------
 
     public static final String DELIVERY_CREATED = "delivery.created.v1";
     public static final String WAREHOUSE_STOCK_CHANGED = "warehouse.stock.changed.v1";

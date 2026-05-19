@@ -12,7 +12,6 @@ import org.example.reportsworkshopgft.eventlog.domain.EventType;
 import org.example.reportsworkshopgft.eventlog.domain.SourceService;
 import org.example.reportsworkshopgft.eventlog.infrastructure.messaging.exception.EventProcessingException;
 import org.example.reportsworkshopgft.eventlog.infrastructure.messaging.exception.EventSerializationException;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,12 +31,6 @@ class TransportEventConsumerTest {
     private final String TIMESTAMP = "2026-05-12T10:00:00";
     private final String JSON_PAYLOAD = "{\"status\":\"ok\"}";
     private final int DAY = 5;
-
-    @BeforeEach
-    void setUp() throws JsonProcessingException {
-        // Por defecto, el mapper funciona bien para los tests de éxito
-        // lenient().when(objectMapper.writeValueAsString(any())).thenReturn(JSON_PAYLOAD);
-    }
 
     @Test
     void should_process_truck_registered_event_successfully() throws JsonProcessingException {

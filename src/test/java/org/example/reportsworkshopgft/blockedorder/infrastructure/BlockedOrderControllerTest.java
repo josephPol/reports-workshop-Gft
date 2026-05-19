@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
 
 @ExtendWith(MockitoExtension.class)
 class BlockedOrderControllerTest {
@@ -20,13 +21,27 @@ class BlockedOrderControllerTest {
     @InjectMocks private BlockedOrderController controller;
 
     @Test
-    void should_return_all_blocked_orders() {
-        List<BlockedOrder> expected = List.of(new BlockedOrder("o1", "f1", "r1", 1));
-        when(blockedOrderService.getAllBlockedOrders()).thenReturn(expected);
+    void should_return_all_blocked_orders_paginated() {
+        List<BlockedOrder> mockOrders = List.of(new BlockedOrder("o1", "f1", "r1", 1));
+        when(blockedOrderService.getAllBlockedOrders()).thenReturn(mockOrders);
 
-        List<BlockedOrder> result = controller.getAllBlockedOrders();
+        Page<BlockedOrder> result = controller.getAllBlockedOrders(0, 20);
 
-        assertThat(result).isEqualTo(expected);
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getNumber()).isEqualTo(0);
+    }
+
+    @Test
+    void should_return_empty_page_content_when_page_is_out_of_range() {
+        List<BlockedOrder> mockOrders = List.of(new BlockedOrder("o1", "f1", "r1", 1));
+        when(blockedOrderService.getAllBlockedOrders()).thenReturn(mockOrders);
+
+        Page<BlockedOrder> result = controller.getAllBlockedOrders(10, 20);
+
+        assertThat(result.getContent()).isEmpty();
+        assertThat(result.getTotalElements()).isEqualTo(1);
+        assertThat(result.getNumber()).isEqualTo(10);
     }
 
     @Test

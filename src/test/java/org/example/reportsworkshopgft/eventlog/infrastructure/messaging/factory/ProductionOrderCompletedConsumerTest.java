@@ -39,9 +39,4 @@ class ProductionOrderCompletedConsumerTest {
                         eq(8),
                         eq("2026-05-06T14:00:00"));
     }
-
-    @Test
-    void should_throw_runtime_exception_when_completed_message_is_malformed() {
-        // Removed as method takes object
-    }
 }

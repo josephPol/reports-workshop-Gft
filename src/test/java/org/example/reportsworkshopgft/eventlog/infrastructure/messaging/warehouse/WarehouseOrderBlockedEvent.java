@@ -12,19 +12,15 @@ class WarehouseOrderBlockedEventTest {
 
     @Test
     void should_create_event_and_access_properties() {
-        // Given
         UUID expectedId = UUID.randomUUID();
 
-        // When
         WarehouseOrderBlockedEvent event = new WarehouseOrderBlockedEvent(expectedId);
 
-        // Then
         assertThat(event.orderId()).isEqualTo(expectedId);
     }
 
     @Test
     void should_deserialize_valid_json_to_record() throws Exception {
-        // Given
         String uuidString = "123e4567-e89b-12d3-a456-426614174000";
         String json =
                 """
@@ -34,11 +30,9 @@ class WarehouseOrderBlockedEventTest {
                 """
                         .formatted(uuidString);
 
-        // When
         WarehouseOrderBlockedEvent event =
                 objectMapper.readValue(json, WarehouseOrderBlockedEvent.class);
 
-        // Then
         assertThat(event).isNotNull();
         assertThat(event.orderId()).isEqualTo(UUID.fromString(uuidString));
     }

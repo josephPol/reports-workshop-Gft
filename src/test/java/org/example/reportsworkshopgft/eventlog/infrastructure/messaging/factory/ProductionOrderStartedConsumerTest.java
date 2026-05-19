@@ -38,9 +38,4 @@ class ProductionOrderStartedConsumerTest {
                         eq(6),
                         eq("2026-05-06T11:00:00"));
     }
-
-    @Test
-    void should_throw_runtime_exception_when_started_message_is_malformed() {
-        // Removed
-    }
 }

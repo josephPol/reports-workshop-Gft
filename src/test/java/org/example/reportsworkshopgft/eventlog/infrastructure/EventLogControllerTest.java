@@ -18,6 +18,9 @@ import org.example.reportsworkshopgft.eventlog.domain.SourceService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -42,14 +45,18 @@ class EventLogControllerTest {
                         .occurredAt("2026-05-11T11:00:00")
                         .build();
 
-        when(eventLogService.findAllEventsLogs()).thenReturn(List.of(event));
+        Page<EventLog> eventPage = new PageImpl<>(List.of(event), PageRequest.of(0, 20), 1L);
+        when(eventLogService.findAllEventsLogs(org.mockito.ArgumentMatchers.any()))
+                .thenReturn(eventPage);
 
         mockMvc.perform(get("/reports/"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].id").exists())
-                .andExpect(jsonPath("$[0].eventType").value("TRUCK_REGISTERED"))
-                .andExpect(jsonPath("$[0].sourceService").value("TRANSPORT"))
-                .andExpect(jsonPath("$[0].simulationDay").value(1));
+                .andExpect(jsonPath("$.content[0].id").exists())
+                .andExpect(jsonPath("$.content[0].eventType").value("TRUCK_REGISTERED"))
+                .andExpect(jsonPath("$.content[0].sourceService").value("TRANSPORT"))
+                .andExpect(jsonPath("$.content[0].simulationDay").value(1))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1));
     }
 
     @Test
@@ -65,7 +72,6 @@ class EventLogControllerTest {
                         .occurredAt("2026-05-11T11:00:00")
                         .build();
 
-        // Cambiamos el id fijo por un "cualquier cosa que sea de la clase EventLogId"
         when(eventLogService.findEventLogById(org.mockito.ArgumentMatchers.any()))
                 .thenReturn(expected);
 
@@ -103,14 +109,21 @@ class EventLogControllerTest {
     void should_return_order_history() throws Exception {
         OrderHistoryProjection history =
                 new OrderHistoryProjection("ORD-001", "FAC-001", "COMPLETED", 2);
-        when(eventLogService.getOrderHistory()).thenReturn(List.of(history));
+        Page<OrderHistoryProjection> historyPage =
+                new PageImpl<>(List.of(history), PageRequest.of(0, 50), 1L);
+        when(eventLogService.getOrderHistory(
+                        org.mockito.ArgumentMatchers.anyInt(),
+                        org.mockito.ArgumentMatchers.anyInt()))
+                .thenReturn(historyPage);
 
         mockMvc.perform(get("/reports/orders/history"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$").isArray())
-                .andExpect(jsonPath("$[0].orderId").value("ORD-001"))
-                .andExpect(jsonPath("$[0].factoryId").value("FAC-001"))
-                .andExpect(jsonPath("$[0].status").value("COMPLETED"))
-                .andExpect(jsonPath("$[0].simulationDay").value(2));
+                .andExpect(jsonPath("$.content").isArray())
+                .andExpect(jsonPath("$.content[0].orderId").value("ORD-001"))
+                .andExpect(jsonPath("$.content[0].factoryId").value("FAC-001"))
+                .andExpect(jsonPath("$.content[0].status").value("COMPLETED"))
+                .andExpect(jsonPath("$.content[0].simulationDay").value(2))
+                .andExpect(jsonPath("$.totalElements").value(1))
+                .andExpect(jsonPath("$.totalPages").value(1));
     }
 }

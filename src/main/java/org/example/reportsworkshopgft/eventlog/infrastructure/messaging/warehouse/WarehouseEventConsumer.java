@@ -74,10 +74,8 @@ public class WarehouseEventConsumer {
         final String eventName = "warehouse.order.blocked.v1";
         try {
             log.info("Warehouse blocked order event received: {}", event);
-            // Validamos que el JSON tiene el formato correcto mapeándolo al record que creaste
             objectMapper.readValue(event, WarehouseOrderBlockedEvent.class);
 
-            // Guardamos el JSON crudo en la base de datos
             eventLogService.save(
                     EventType.WAREHOUSE_ORDER_BLOCKED, SourceService.WAREHOUSE, event, 0, "");
         } catch (JsonProcessingException e) {
