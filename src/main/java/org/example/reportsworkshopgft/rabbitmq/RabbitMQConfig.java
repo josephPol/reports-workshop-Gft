@@ -12,7 +12,7 @@ public class RabbitMQConfig {
 
     public static final String TIME_EXCHANGE = "ms-time.exchange";
     public static final String TRANSPORT_EXCHANGE = "trucks.exchange";
-    public static final String PRODUCTION_EXCHANGE = "production.exchange";
+    public static final String PRODUCTION_EXCHANGE = "production.events";
     public static final String WAREHOUSE_EXCHANGE = "warehouses.exchange";
 
     public static final String TIME_ADVANCED_ROUTING_KEY = "time.advanced.v1";
