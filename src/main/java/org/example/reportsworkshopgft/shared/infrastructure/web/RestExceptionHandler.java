@@ -1,7 +1,6 @@
 package org.example.reportsworkshopgft.shared.infrastructure.web;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.reportsworkshopgft.blockedorder.application.exception.BlockedOrderNotFoundException;
 import org.example.reportsworkshopgft.eventlog.application.exception.EventLogNotFoundException;
 import org.example.reportsworkshopgft.eventlog.domain.exception.EventLogIdNotUuidException;
 import org.example.reportsworkshopgft.eventlog.domain.exception.InvalidEventLogIdException;
@@ -13,7 +12,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class RestExceptionHandler {
 
-    @ExceptionHandler({EventLogNotFoundException.class, BlockedOrderNotFoundException.class})
+    @ExceptionHandler({EventLogNotFoundException.class})
     public ResponseEntity<ApiErrorResponse> handleNotFound(
             RuntimeException ex, HttpServletRequest request) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
