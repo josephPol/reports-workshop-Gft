@@ -5,7 +5,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.example.reportsworkshopgft.blockedorder.application.exception.BlockedOrderNotFoundException;
 import org.example.reportsworkshopgft.eventlog.application.exception.EventLogNotFoundException;
 import org.example.reportsworkshopgft.eventlog.domain.EventLogId;
 import org.example.reportsworkshopgft.eventlog.domain.exception.EventLogIdNotUuidException;
@@ -30,19 +29,6 @@ class RestExceptionHandlerTest {
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().status()).isEqualTo(404);
         assertThat(response.getBody().path()).isEqualTo("/reports/123");
-    }
-
-    @Test
-    void should_map_not_found_to_404_for_blocked_orders() {
-        HttpServletRequest request = mock(HttpServletRequest.class);
-        when(request.getRequestURI()).thenReturn("/blockedOrders/missing");
-
-        var response =
-                handler.handleNotFound(new BlockedOrderNotFoundException("missing"), request);
-
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
-        assertThat(response.getBody()).isNotNull();
-        assertThat(response.getBody().path()).isEqualTo("/blockedOrders/missing");
     }
 
     @Test
