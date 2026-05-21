@@ -12,7 +12,7 @@ public class RabbitMQConfig {
 
     public static final String TIME_EXCHANGE = "ms-time.exchange";
     public static final String TRANSPORT_EXCHANGE = "trucks.exchange";
-    public static final String PRODUCTION_EXCHANGE = "production.events";
+    public static final String PRODUCTION_EXCHANGE = "production.exchange";
     public static final String WAREHOUSE_EXCHANGE = "warehouses.exchange";
 
     public static final String TIME_ADVANCED_ROUTING_KEY = "time.advanced.v1";
@@ -55,9 +55,21 @@ public class RabbitMQConfig {
     public static final String FACTORY_REGISTERED_QUEUE_NAME = "reports.factory.registered.v1";
 
     public static final String DELIVERY_CREATED = "delivery.created.v1";
-    public static final String WAREHOUSE_STOCK_CHANGED = "warehouse.stock.changed.v1";
-    public static final String REPLENISHMENT_REQUESTED = "replenishment.requested.v1";
-    public static final String WAREHOUSE_ORDER_BLOCKED = "warehouse.order.blocked.v1";
+
+    public static final String WAREHOUSE_STOCK_CHANGED_ROUTING_KEY = "warehouse.stock.changed.v1";
+    public static final String WAREHOUSE_STOCK_CHANGED_QUEUE_NAME =
+            "reports.warehouse.stock.changed.v1";
+
+    public static final String REPLENISHMENT_REQUESTED_ROUTING_KEY = "replenishment.requested.v1";
+    public static final String REPLENISHMENT_REQUESTED_QUEUE_NAME =
+            "reports.replenishment.requested.v1";
+
+    public static final String WAREHOUSE_ORDER_BLOCKED_ROUTING_KEY = "warehouse.order.blocked.v1";
+    public static final String WAREHOUSE_ORDER_BLOCKED_QUEUE_NAME =
+            "reports.warehouse.order.blocked.v1";
+
+    public static final String WAREHOUSE_REGISTERED_ROUTING_KEY = "warehouse.registered.v1";
+    public static final String WAREHOUSE_REGISTERED_QUEUE_NAME = "reports.warehouse.registered.v1";
 
     @Bean
     public TopicExchange timeExchange() {
@@ -111,6 +123,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue warehouseRegisteredQueue() {
+        return new Queue(WAREHOUSE_REGISTERED_QUEUE_NAME, true);
+    }
+
+    @Bean
     public Queue deliveryCompletedQueue() {
         return new Queue(DELIVERY_COMPLETED_QUEUE_NAME, true);
     }
@@ -137,12 +154,12 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue warehouseStockChangedQueue() {
-        return new Queue(WAREHOUSE_STOCK_CHANGED, true);
+        return new Queue(WAREHOUSE_STOCK_CHANGED_QUEUE_NAME, true);
     }
 
     @Bean
     public Queue replenishmentRequestedQueue() {
-        return new Queue(REPLENISHMENT_REQUESTED, true);
+        return new Queue(REPLENISHMENT_REQUESTED_QUEUE_NAME, true);
     }
 
     @Bean
@@ -165,6 +182,13 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(timeAdvancedQueue())
                 .to(timeExchange())
                 .with(TIME_ADVANCED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding warehouseRegisteredBinding() {
+        return BindingBuilder.bind(warehouseRegisteredQueue())
+                .to(warehouseExchange())
+                .with(WAREHOUSE_REGISTERED_ROUTING_KEY);
     }
 
     @Bean
@@ -227,14 +251,14 @@ public class RabbitMQConfig {
     public Binding warehouseStockChangedBinding() {
         return BindingBuilder.bind(warehouseStockChangedQueue())
                 .to(warehouseExchange())
-                .with(WAREHOUSE_STOCK_CHANGED);
+                .with(WAREHOUSE_STOCK_CHANGED_ROUTING_KEY);
     }
 
     @Bean
     public Binding replenishmentRequestedBinding() {
         return BindingBuilder.bind(replenishmentRequestedQueue())
                 .to(warehouseExchange())
-                .with(REPLENISHMENT_REQUESTED);
+                .with(REPLENISHMENT_REQUESTED_ROUTING_KEY);
     }
 
     @Bean
@@ -260,14 +284,14 @@ public class RabbitMQConfig {
 
     @Bean
     public Queue warehouseOrderBlockedQueue() {
-        return new Queue(WAREHOUSE_ORDER_BLOCKED, true);
+        return new Queue(WAREHOUSE_ORDER_BLOCKED_QUEUE_NAME, true);
     }
 
     @Bean
     public Binding warehouseOrderBlockedBinding() {
         return BindingBuilder.bind(warehouseOrderBlockedQueue())
                 .to(warehouseExchange())
-                .with(WAREHOUSE_ORDER_BLOCKED);
+                .with(WAREHOUSE_ORDER_BLOCKED_ROUTING_KEY);
     }
 
     @Bean

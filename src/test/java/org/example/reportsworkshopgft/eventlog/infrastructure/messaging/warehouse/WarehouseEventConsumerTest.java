@@ -1,269 +1,238 @@
 package org.example.reportsworkshopgft.eventlog.infrastructure.messaging.warehouse;
 
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.reportsworkshopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworkshopgft.eventlog.domain.EventType;
 import org.example.reportsworkshopgft.eventlog.domain.SourceService;
-import org.example.reportsworkshopgft.eventlog.infrastructure.messaging.exception.EventDeserializationException;
 import org.example.reportsworkshopgft.eventlog.infrastructure.messaging.exception.EventProcessingException;
+import org.example.reportsworkshopgft.eventlog.infrastructure.messaging.exception.EventSerializationException;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataRetrievalFailureException;
+
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayName("WarehouseEventConsumer Unit Tests - 100% Coverage Matrix")
 class WarehouseEventConsumerTest {
 
-    @Mock private EventLogServiceImpl eventLogServiceImpl;
+    @Mock
+    private EventLogServiceImpl eventLogService;
 
-    @Spy private ObjectMapper objectMapper = new ObjectMapper();
+    @Mock
+    private ObjectMapper objectMapper;
 
-    @InjectMocks private WarehouseEventConsumer consumer;
+    @InjectMocks
+    private WarehouseEventConsumer warehouseEventConsumer;
 
-    @Test
-    void should_process_warehouse_stock_changed_event() {
-        String validJson =
-                """
-                {
-                  "productId": "abc-123",
-                  "quantity": 50,
-                  "type": "INCREASE"
-                }
-                """;
+    // Instancias de soporte falsas para simular la llegada de eventos de RabbitMQ
+    private final WarehouseStockChangedMessage stockMessage = mock(WarehouseStockChangedMessage.class);
+    private final ReplenishmentRequestedMessage replenishmentMessage = mock(ReplenishmentRequestedMessage.class);
+    private final WarehouseOrderBlockedMessage orderBlockedMessage = mock(WarehouseOrderBlockedMessage.class);
+    private final WarehouseRegisteredEvent registeredEvent = new WarehouseRegisteredEvent(UUID.randomUUID());
 
-        consumer.onWarehouseStockChanged(validJson);
+    private final String simulatedJson = "{\"status\":\"simulated\"}";
 
-        verify(eventLogServiceImpl, times(1))
-                .save(
-                        eq(EventType.WAREHOUSE_STOCK_CHANGED),
-                        eq(SourceService.WAREHOUSE),
-                        any(String.class),
-                        eq(0),
-                        eq(""));
+    @Nested
+    @DisplayName("Scenario 1: Happy Path (Successful Processing)")
+    class HappyPathTests {
+
+        @Test
+        @DisplayName("Should process WarehouseStockChanged successfully")
+        void shouldProcessWarehouseStockChanged() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(stockMessage)).thenReturn(simulatedJson);
+
+            warehouseEventConsumer.onWarehouseStockChanged(stockMessage);
+
+            verify(eventLogService).save(EventType.WAREHOUSE_STOCK_CHANGED, SourceService.WAREHOUSE, simulatedJson, 0, "");
+        }
+
+        @Test
+        @DisplayName("Should process ReplenishmentRequested successfully")
+        void shouldProcessReplenishmentRequested() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(replenishmentMessage)).thenReturn(simulatedJson);
+
+            warehouseEventConsumer.onReplenishmentRequested(replenishmentMessage);
+
+            verify(eventLogService).save(EventType.REPLENISHMENT_REQUESTED, SourceService.WAREHOUSE, simulatedJson, 0, "");
+        }
+
+        @Test
+        @DisplayName("Should process WarehouseOrderBlocked successfully")
+        void shouldProcessWarehouseOrderBlocked() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(orderBlockedMessage)).thenReturn(simulatedJson);
+
+            warehouseEventConsumer.onWarehouseOrderBlocked(orderBlockedMessage);
+
+            verify(eventLogService).save(EventType.WAREHOUSE_ORDER_BLOCKED, SourceService.WAREHOUSE, simulatedJson, 0, "");
+        }
+
+        @Test
+        @DisplayName("Should process WarehouseRegistered successfully")
+        void shouldProcessWarehouseRegistered() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(registeredEvent)).thenReturn(simulatedJson);
+
+            warehouseEventConsumer.onWarehouseRegistered(registeredEvent);
+
+            verify(eventLogService).save(EventType.WAREHOUSE_REGISTERED, SourceService.WAREHOUSE, simulatedJson, 0, "");
+        }
     }
 
-    @Test
-    void should_throw_exception_when_message_is_invalid() {
-        String invalidJson = "esto-no-es-json";
+    @Nested
+    @DisplayName("Scenario 2: JsonProcessingException Branches")
+    class SerializationErrorTests {
 
-        assertThatThrownBy(() -> consumer.onWarehouseStockChanged(invalidJson))
-                .isInstanceOf(EventDeserializationException.class)
-                .hasMessageContaining("Error processing warehouse.stock.changed.v1");
+        @Test
+        @DisplayName("onWarehouseStockChanged - Should throw EventSerializationException when Jackson fails")
+        void stockChangedSerializationError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Simulated Error") {});
+
+            assertThatThrownBy(() -> warehouseEventConsumer.onWarehouseStockChanged(stockMessage))
+                    .isInstanceOf(EventSerializationException.class)
+                    .hasMessageContaining("Error processing RabbitMQ event: warehouse.stock.changed.v1");
+        }
+
+        @Test
+        @DisplayName("onReplenishmentRequested - Should throw EventSerializationException when Jackson fails")
+        void replenishmentSerializationError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Simulated Error") {});
+
+            assertThatThrownBy(() -> warehouseEventConsumer.onReplenishmentRequested(replenishmentMessage))
+                    .isInstanceOf(EventSerializationException.class)
+                    .hasMessageContaining("Error processing RabbitMQ event: replenishment.requested.v1");
+        }
+
+        @Test
+        @DisplayName("onWarehouseOrderBlocked - Should throw EventSerializationException when Jackson fails")
+        void orderBlockedSerializationError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Simulated Error") {});
+
+            assertThatThrownBy(() -> warehouseEventConsumer.onWarehouseOrderBlocked(orderBlockedMessage))
+                    .isInstanceOf(EventSerializationException.class)
+                    .hasMessageContaining("Error processing RabbitMQ event: warehouse.order.blocked.v1");
+        }
+
+        @Test
+        @DisplayName("onWarehouseRegistered - Should throw EventSerializationException when Jackson fails")
+        void registeredSerializationError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(any())).thenThrow(new JsonProcessingException("Simulated Error") {});
+
+            assertThatThrownBy(() -> warehouseEventConsumer.onWarehouseRegistered(registeredEvent))
+                    .isInstanceOf(EventSerializationException.class)
+                    .hasMessageContaining("Error processing RabbitMQ event: warehouse.registered.v1");
+        }
     }
 
-    @Test
-    void should_process_replenishment_requested_event() {
-        String validJson =
-                """
-                {
-                  "productId": "abc-123",
-                  "quantity": 50,
-                  "type": "REPLENISHMENT"
-                }
-                """;
+    @Nested
+    @DisplayName("Scenario 3: DataAccessException Branches")
+    class DatabaseErrorTests {
 
-        consumer.onReplenishmentRequested(validJson);
+        @Test
+        @DisplayName("onWarehouseStockChanged - Should rethrow DataAccessException directly")
+        void stockChangedDatabaseError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(stockMessage)).thenReturn(simulatedJson);
+            doThrow(new DataRetrievalFailureException("DB connection dead"))
+                    .when(eventLogService).save(eq(EventType.WAREHOUSE_STOCK_CHANGED), any(), any(), anyInt(), anyString());
 
-        verify(eventLogServiceImpl, times(1))
-                .save(
-                        eq(EventType.REPLENISHMENT_REQUESTED),
-                        eq(SourceService.WAREHOUSE),
-                        any(String.class),
-                        eq(0),
-                        eq(""));
+            assertThatThrownBy(() -> warehouseEventConsumer.onWarehouseStockChanged(stockMessage))
+                    .isInstanceOf(DataRetrievalFailureException.class);
+        }
+
+        @Test
+        @DisplayName("onReplenishmentRequested - Should rethrow DataAccessException directly")
+        void replenishmentDatabaseError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(replenishmentMessage)).thenReturn(simulatedJson);
+            doThrow(new DataRetrievalFailureException("DB connection dead"))
+                    .when(eventLogService).save(eq(EventType.REPLENISHMENT_REQUESTED), any(), any(), anyInt(), anyString());
+
+            assertThatThrownBy(() -> warehouseEventConsumer.onReplenishmentRequested(replenishmentMessage))
+                    .isInstanceOf(DataRetrievalFailureException.class);
+        }
+
+        @Test
+        @DisplayName("onWarehouseOrderBlocked - Should rethrow DataAccessException directly")
+        void orderBlockedDatabaseError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(orderBlockedMessage)).thenReturn(simulatedJson);
+            doThrow(new DataRetrievalFailureException("DB connection dead"))
+                    .when(eventLogService).save(eq(EventType.WAREHOUSE_ORDER_BLOCKED), any(), any(), anyInt(), anyString());
+
+            assertThatThrownBy(() -> warehouseEventConsumer.onWarehouseOrderBlocked(orderBlockedMessage))
+                    .isInstanceOf(DataRetrievalFailureException.class);
+        }
+
+        @Test
+        @DisplayName("onWarehouseRegistered - Should rethrow DataAccessException directly")
+        void registeredDatabaseError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(registeredEvent)).thenReturn(simulatedJson);
+            doThrow(new DataRetrievalFailureException("DB connection dead"))
+                    .when(eventLogService).save(eq(EventType.WAREHOUSE_REGISTERED), any(), any(), anyInt(), anyString());
+
+            assertThatThrownBy(() -> warehouseEventConsumer.onWarehouseRegistered(registeredEvent))
+                    .isInstanceOf(DataRetrievalFailureException.class);
+        }
     }
 
-    @Test
-    void should_throw_exception_when_replenishment_message_is_invalid() {
-        String invalidJson = "esto-no-es-json";
+    @Nested
+    @DisplayName("Scenario 4: RuntimeException (Unexpected) Branches")
+    class UnexpectedErrorTests {
 
-        assertThatThrownBy(() -> consumer.onReplenishmentRequested(invalidJson))
-                .isInstanceOf(EventDeserializationException.class)
-                .hasMessageContaining("Error processing replenishment.requested.v1");
-    }
+        @Test
+        @DisplayName("onWarehouseStockChanged - Should wrap unexpected exceptions into EventProcessingException")
+        void stockChangedUnexpectedError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(stockMessage)).thenReturn(simulatedJson);
+            doThrow(new NullPointerException("Unexpected null reference"))
+                    .when(eventLogService).save(eq(EventType.WAREHOUSE_STOCK_CHANGED), any(), any(), anyInt(), anyString());
 
-    @Test
-    void should_throw_data_access_exception_when_warehouse_stock_changed_db_fails() {
-        String validJson =
-                """
-                {
-                  "productId": "abc-123",
-                  "quantity": 50,
-                  "type": "INCREASE"
-                }
-                """;
+            assertThatThrownBy(() -> warehouseEventConsumer.onWarehouseStockChanged(stockMessage))
+                    .isInstanceOf(EventProcessingException.class)
+                    .hasMessageContaining("Error processing RabbitMQ event: warehouse.stock.changed.v1");
+        }
 
-        doThrow(new DataAccessException("DB Error") {})
-                .when(eventLogServiceImpl)
-                .save(
-                        eq(EventType.WAREHOUSE_STOCK_CHANGED),
-                        eq(SourceService.WAREHOUSE),
-                        any(String.class),
-                        eq(0),
-                        eq(""));
+        @Test
+        @DisplayName("onReplenishmentRequested - Should wrap unexpected exceptions into EventProcessingException")
+        void replenishmentUnexpectedError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(replenishmentMessage)).thenReturn(simulatedJson);
+            doThrow(new NullPointerException("Unexpected null reference"))
+                    .when(eventLogService).save(eq(EventType.REPLENISHMENT_REQUESTED), any(), any(), anyInt(), anyString());
 
-        assertThatThrownBy(() -> consumer.onWarehouseStockChanged(validJson))
-                .isInstanceOf(DataAccessException.class)
-                .hasMessage("DB Error");
-    }
+            assertThatThrownBy(() -> warehouseEventConsumer.onReplenishmentRequested(replenishmentMessage))
+                    .isInstanceOf(EventProcessingException.class)
+                    .hasMessageContaining("Error processing RabbitMQ event: replenishment.requested.v1");
+        }
 
-    @Test
-    void should_throw_data_access_exception_when_replenishment_requested_db_fails() {
-        String validJson =
-                """
-                {
-                  "productId": "abc-123",
-                  "quantity": 50,
-                  "type": "REPLENISHMENT"
-                }
-                """;
+        @Test
+        @DisplayName("onWarehouseOrderBlocked - Should wrap unexpected exceptions into EventProcessingException")
+        void orderBlockedUnexpectedError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(orderBlockedMessage)).thenReturn(simulatedJson);
+            doThrow(new NullPointerException("Unexpected null reference"))
+                    .when(eventLogService).save(eq(EventType.WAREHOUSE_ORDER_BLOCKED), any(), any(), anyInt(), anyString());
 
-        doThrow(new DataAccessException("DB Error") {})
-                .when(eventLogServiceImpl)
-                .save(
-                        eq(EventType.REPLENISHMENT_REQUESTED),
-                        eq(SourceService.WAREHOUSE),
-                        any(String.class),
-                        eq(0),
-                        eq(""));
+            assertThatThrownBy(() -> warehouseEventConsumer.onWarehouseOrderBlocked(orderBlockedMessage))
+                    .isInstanceOf(EventProcessingException.class)
+                    .hasMessageContaining("Error processing RabbitMQ event: warehouse.order.blocked.v1");
+        }
 
-        assertThatThrownBy(() -> consumer.onReplenishmentRequested(validJson))
-                .isInstanceOf(DataAccessException.class)
-                .hasMessage("DB Error");
-    }
+        @Test
+        @DisplayName("onWarehouseRegistered - Should wrap unexpected exceptions into EventProcessingException")
+        void registeredUnexpectedError() throws JsonProcessingException {
+            when(objectMapper.writeValueAsString(registeredEvent)).thenReturn(simulatedJson);
+            doThrow(new NullPointerException("Unexpected null reference"))
+                    .when(eventLogService).save(eq(EventType.WAREHOUSE_REGISTERED), any(), any(), anyInt(), anyString());
 
-    @Test
-    void should_throw_runtime_exception_when_warehouse_stock_changed_unexpected_error() {
-        String validJson =
-                """
-                {
-                  "productId": "abc-123",
-                  "quantity": 50,
-                  "type": "INCREASE"
-                }
-                """;
-
-        doThrow(new IllegalStateException("Unexpected Error"))
-                .when(eventLogServiceImpl)
-                .save(
-                        eq(EventType.WAREHOUSE_STOCK_CHANGED),
-                        eq(SourceService.WAREHOUSE),
-                        any(String.class),
-                        eq(0),
-                        eq(""));
-
-        assertThatThrownBy(() -> consumer.onWarehouseStockChanged(validJson))
-                .isInstanceOf(EventProcessingException.class)
-                .hasMessageContaining("Error processing warehouse.stock.changed.v1");
-    }
-
-    @Test
-    void should_throw_runtime_exception_when_replenishment_requested_unexpected_error() {
-        String validJson =
-                """
-                {
-                  "productId": "abc-123",
-                  "quantity": 50,
-                  "type": "REPLENISHMENT"
-                }
-                """;
-
-        doThrow(new IllegalStateException("Unexpected Error"))
-                .when(eventLogServiceImpl)
-                .save(
-                        eq(EventType.REPLENISHMENT_REQUESTED),
-                        eq(SourceService.WAREHOUSE),
-                        any(String.class),
-                        eq(0),
-                        eq(""));
-
-        assertThatThrownBy(() -> consumer.onReplenishmentRequested(validJson))
-                .isInstanceOf(EventProcessingException.class)
-                .hasMessageContaining("Error processing replenishment.requested.v1");
-    }
-
-    @Test
-    void should_process_warehouse_order_blocked_event() {
-        String validJson =
-                """
-                {
-                  "orderId": "123e4567-e89b-12d3-a456-426614174000"
-                }
-                """;
-
-        consumer.onWarehouseOrderBlocked(validJson);
-
-        verify(eventLogServiceImpl, times(1))
-                .save(
-                        eq(EventType.WAREHOUSE_ORDER_BLOCKED),
-                        eq(SourceService.WAREHOUSE),
-                        any(String.class),
-                        eq(0),
-                        eq(""));
-    }
-
-    @Test
-    void should_throw_exception_when_warehouse_order_blocked_message_is_invalid() {
-        String invalidJson = "not-valid-json";
-
-        assertThatThrownBy(() -> consumer.onWarehouseOrderBlocked(invalidJson))
-                .isInstanceOf(EventDeserializationException.class)
-                .hasMessageContaining("Error processing warehouse.order.blocked.v1");
-    }
-
-    @Test
-    void should_throw_data_access_exception_when_warehouse_order_blocked_db_fails() {
-        String validJson =
-                """
-                {
-                  "orderId": "123e4567-e89b-12d3-a456-426614174000"
-                }
-                """;
-
-        doThrow(new DataAccessException("DB Error") {})
-                .when(eventLogServiceImpl)
-                .save(
-                        eq(EventType.WAREHOUSE_ORDER_BLOCKED),
-                        eq(SourceService.WAREHOUSE),
-                        any(String.class),
-                        eq(0),
-                        eq(""));
-
-        assertThatThrownBy(() -> consumer.onWarehouseOrderBlocked(validJson))
-                .isInstanceOf(DataAccessException.class)
-                .hasMessage("DB Error");
-    }
-
-    @Test
-    void should_throw_runtime_exception_when_warehouse_order_blocked_unexpected_error() {
-        String validJson =
-                """
-                {
-                  "orderId": "123e4567-e89b-12d3-a456-426614174000"
-                }
-                """;
-
-        doThrow(new IllegalStateException("Unexpected Error"))
-                .when(eventLogServiceImpl)
-                .save(
-                        eq(EventType.WAREHOUSE_ORDER_BLOCKED),
-                        eq(SourceService.WAREHOUSE),
-                        any(String.class),
-                        eq(0),
-                        eq(""));
-
-        assertThatThrownBy(() -> consumer.onWarehouseOrderBlocked(validJson))
-                .isInstanceOf(EventProcessingException.class)
-                .hasMessageContaining("Error processing warehouse.order.blocked.v1");
+            assertThatThrownBy(() -> warehouseEventConsumer.onWarehouseRegistered(registeredEvent))
+                    .isInstanceOf(EventProcessingException.class)
+                    .hasMessageContaining("Error processing RabbitMQ event: warehouse.registered.v1");
+        }
     }
 }
