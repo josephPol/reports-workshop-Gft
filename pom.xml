@@ -242,7 +242,7 @@
                         </goals>
                         <configuration>
                             <excludes>
-                                <exclude>**/load/**</exclude>
+                                <exclude>org/example/reportsworkshopgft/load/EventLogLoadSimulation.class</exclude>
                             </excludes>
                         </configuration>
                     </execution>
@@ -255,7 +255,7 @@
                         <configuration>
                             <haltOnFailure>true</haltOnFailure>
                             <excludes>
-                                <exclude>**/load/**</exclude>
+                                <exclude>org/example/reportsworkshopgft/load/EventLogLoadSimulation.class</exclude>
                             </excludes>
                             <rules>
                                 <rule>
