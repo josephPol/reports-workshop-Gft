@@ -1,13 +1,12 @@
 package org.example.reportsworkshopgft.eventlog.infrastructure.messaging.warehouse;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-
-import java.util.UUID;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("Unit Tests - WarehouseRegisteredEvent")
 class WarehouseRegisteredEventTest {
@@ -20,14 +19,16 @@ class WarehouseRegisteredEventTest {
         UUID warehouseId = UUID.randomUUID();
         String json = String.format("{\"warehouseId\":\"%s\"}", warehouseId);
 
-        WarehouseRegisteredEvent event = objectMapper.readValue(json, WarehouseRegisteredEvent.class);
+        WarehouseRegisteredEvent event =
+                objectMapper.readValue(json, WarehouseRegisteredEvent.class);
 
         assertThat(event).isNotNull();
         assertThat(event.warehouseId()).isEqualTo(warehouseId);
     }
 
     @Test
-    @DisplayName("Given an event instance, when serialized, then JSON properties must match annotations")
+    @DisplayName(
+            "Given an event instance, when serialized, then JSON properties must match annotations")
     void shouldSerializeCorrectly() throws JsonProcessingException {
         UUID warehouseId = UUID.randomUUID();
         WarehouseRegisteredEvent event = new WarehouseRegisteredEvent(warehouseId);
