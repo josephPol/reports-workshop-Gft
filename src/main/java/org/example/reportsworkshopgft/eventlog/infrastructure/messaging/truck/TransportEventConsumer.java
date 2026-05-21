@@ -137,4 +137,23 @@ public class TransportEventConsumer {
             throw new EventProcessingException(eventName, "Error processing RabbitMQ event", e);
         }
     }
+
+    @RabbitListener(queues = RabbitMQConfig.TRUCK_DELETED_QUEUE_NAME)
+    public void onTruckDeleted(TruckDeletedEvent event) {
+        final String eventName = "truck.deleted.v1";
+        try {
+            log.info("Transport event received: {}", event);
+            String jsonPayload = objectMapper.writeValueAsString(event);
+            eventLogServiceImpl.save(
+                    EventType.TRUCK_DELETED,
+                    SourceService.TRANSPORT,
+                    jsonPayload,
+                    event.simulationDay(),
+                    event.timestamp());
+
+        } catch (Exception e) {
+            log.error("Error processing truck deleted event: {}", event, e);
+            throw new EventProcessingException(eventName, "Error processing RabbitMQ event", e);
+        }
+    }
 }
