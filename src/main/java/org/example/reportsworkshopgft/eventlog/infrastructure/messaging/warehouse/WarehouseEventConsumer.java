@@ -7,8 +7,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.reportsworkshopgft.eventlog.application.impl.EventLogServiceImpl;
 import org.example.reportsworkshopgft.eventlog.domain.EventType;
 import org.example.reportsworkshopgft.eventlog.domain.SourceService;
-import org.example.reportsworkshopgft.eventlog.infrastructure.messaging.exception.EventDeserializationException;
 import org.example.reportsworkshopgft.eventlog.infrastructure.messaging.exception.EventProcessingException;
+import org.example.reportsworkshopgft.eventlog.infrastructure.messaging.exception.EventSerializationException;
+import org.example.reportsworkshopgft.rabbitmq.RabbitMQConfig;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Component;
@@ -21,74 +22,91 @@ public class WarehouseEventConsumer {
     private final EventLogServiceImpl eventLogService;
     private final ObjectMapper objectMapper;
 
-    @RabbitListener(queues = "warehouse.stock.changed.v1")
-    public void onWarehouseStockChanged(String event) {
+    @RabbitListener(queues = RabbitMQConfig.WAREHOUSE_STOCK_CHANGED_QUEUE_NAME)
+    public void onWarehouseStockChanged(WarehouseStockChangedMessage event) {
         final String eventName = "warehouse.stock.changed.v1";
         try {
-            log.info("Production event received: {}", event);
-            objectMapper.readValue(event, WarehouseStockChangedMessage.class);
+            log.info("Warehouse event received: {}", event);
+            String jsonPayload = objectMapper.writeValueAsString(event);
             eventLogService.save(
-                    EventType.WAREHOUSE_STOCK_CHANGED, SourceService.WAREHOUSE, event, 0, "");
+                    EventType.WAREHOUSE_STOCK_CHANGED, SourceService.WAREHOUSE, jsonPayload, 0, "");
         } catch (JsonProcessingException e) {
-            log.error("Error deserializing JSON event: {}", event, e);
-            throw new EventDeserializationException(
-                    eventName, "Error processing warehouse.stock.changed.v1", e);
+            log.error("Error serializing event to JSON: {}", event, e);
+            throw new EventSerializationException(
+                    eventName, "Error processing RabbitMQ event: " + eventName, e);
         } catch (DataAccessException e) {
             log.error("Database error while saving log: {}", event, e);
             throw e;
         } catch (RuntimeException e) {
-            log.error("Unexpected error processing production order: {}", event, e);
+            log.error("Unexpected error processing warehouse event: {}", event, e);
             throw new EventProcessingException(
-                    eventName, "Error processing warehouse.stock.changed.v1", e);
+                    eventName, "Error processing RabbitMQ event: " + eventName, e);
         }
     }
 
-    @RabbitListener(queues = "replenishment.requested.v1")
-    public void onReplenishmentRequested(String event) {
+    @RabbitListener(queues = RabbitMQConfig.REPLENISHMENT_REQUESTED_QUEUE_NAME)
+    public void onReplenishmentRequested(ReplenishmentRequestedMessage event) {
         final String eventName = "replenishment.requested.v1";
         try {
-            ReplenishmentRequestedMessage event11 =
-                    objectMapper.readValue(event, ReplenishmentRequestedMessage.class);
+            log.info("Warehouse event received: {}", event);
+            String jsonPayload = objectMapper.writeValueAsString(event);
             eventLogService.save(
-                    EventType.REPLENISHMENT_REQUESTED,
-                    SourceService.WAREHOUSE,
-                    event11.toPayload(),
-                    0,
-                    "");
+                    EventType.REPLENISHMENT_REQUESTED, SourceService.WAREHOUSE, jsonPayload, 0, "");
         } catch (JsonProcessingException e) {
-            log.error("Error deserializing JSON event: {}", event, e);
-            throw new EventDeserializationException(
-                    eventName, "Error processing replenishment.requested.v1", e);
+            log.error("Error serializing event to JSON: {}", event, e);
+            throw new EventSerializationException(
+                    eventName, "Error processing RabbitMQ event: " + eventName, e);
         } catch (DataAccessException e) {
             log.error("Database error while saving log: {}", event, e);
             throw e;
         } catch (RuntimeException e) {
-            log.error("Unexpected error processing production order: {}", event, e);
+            log.error("Unexpected error processing warehouse event: {}", event, e);
             throw new EventProcessingException(
-                    eventName, "Error processing replenishment.requested.v1", e);
+                    eventName, "Error processing RabbitMQ event: " + eventName, e);
         }
     }
 
-    @RabbitListener(queues = "warehouse.order.blocked.v1")
-    public void onWarehouseOrderBlocked(String event) {
+    @RabbitListener(queues = RabbitMQConfig.WAREHOUSE_ORDER_BLOCKED_QUEUE_NAME)
+    public void onWarehouseOrderBlocked(WarehouseOrderBlockedMessage event) {
         final String eventName = "warehouse.order.blocked.v1";
         try {
-            log.info("Warehouse blocked order event received: {}", event);
-            objectMapper.readValue(event, WarehouseOrderBlockedEvent.class);
-
+            log.info("Warehouse event received: {}", event);
+            String jsonPayload = objectMapper.writeValueAsString(event);
             eventLogService.save(
-                    EventType.WAREHOUSE_ORDER_BLOCKED, SourceService.WAREHOUSE, event, 0, "");
+                    EventType.WAREHOUSE_ORDER_BLOCKED, SourceService.WAREHOUSE, jsonPayload, 0, "");
         } catch (JsonProcessingException e) {
-            log.error("Error deserializing JSON event: {}", event, e);
-            throw new EventDeserializationException(
-                    eventName, "Error processing warehouse.order.blocked.v1", e);
+            log.error("Error serializing event to JSON: {}", event, e);
+            throw new EventSerializationException(
+                    eventName, "Error processing RabbitMQ event: " + eventName, e);
         } catch (DataAccessException e) {
             log.error("Database error while saving log: {}", event, e);
             throw e;
         } catch (RuntimeException e) {
-            log.error("Unexpected error processing blocked order: {}", event, e);
+            log.error("Unexpected error processing warehouse event: {}", event, e);
             throw new EventProcessingException(
-                    eventName, "Error processing warehouse.order.blocked.v1", e);
+                    eventName, "Error processing RabbitMQ event: " + eventName, e);
+        }
+    }
+
+    @RabbitListener(queues = RabbitMQConfig.WAREHOUSE_REGISTERED_QUEUE_NAME)
+    public void onWarehouseRegistered(WarehouseRegisteredEvent event) {
+        final String eventName = "warehouse.registered.v1";
+        try {
+            log.info("Warehouse event received: {}", event);
+            String jsonPayload = objectMapper.writeValueAsString(event);
+            eventLogService.save(
+                    EventType.WAREHOUSE_REGISTERED, SourceService.WAREHOUSE, jsonPayload, 0, "");
+        } catch (JsonProcessingException e) {
+            log.error("Error serializing event to JSON: {}", event, e);
+            throw new EventSerializationException(
+                    eventName, "Error processing RabbitMQ event: " + eventName, e);
+        } catch (DataAccessException e) {
+            log.error("Database error while saving log: {}", event, e);
+            throw e;
+        } catch (RuntimeException e) {
+            log.error("Unexpected error processing warehouse event: {}", event, e);
+            throw new EventProcessingException(
+                    eventName, "Error processing RabbitMQ event: " + eventName, e);
         }
     }
 }

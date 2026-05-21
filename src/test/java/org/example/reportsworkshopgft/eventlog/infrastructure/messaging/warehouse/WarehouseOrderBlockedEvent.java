@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
-class WarehouseOrderBlockedEventTest {
+class WarehouseOrderBlockedMessageTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -14,7 +14,7 @@ class WarehouseOrderBlockedEventTest {
     void should_create_event_and_access_properties() {
         UUID expectedId = UUID.randomUUID();
 
-        WarehouseOrderBlockedEvent event = new WarehouseOrderBlockedEvent(expectedId);
+        WarehouseOrderBlockedMessage event = new WarehouseOrderBlockedMessage(expectedId);
 
         assertThat(event.orderId()).isEqualTo(expectedId);
     }
@@ -30,8 +30,8 @@ class WarehouseOrderBlockedEventTest {
                 """
                         .formatted(uuidString);
 
-        WarehouseOrderBlockedEvent event =
-                objectMapper.readValue(json, WarehouseOrderBlockedEvent.class);
+        WarehouseOrderBlockedMessage event =
+                objectMapper.readValue(json, WarehouseOrderBlockedMessage.class);
 
         assertThat(event).isNotNull();
         assertThat(event.orderId()).isEqualTo(UUID.fromString(uuidString));
