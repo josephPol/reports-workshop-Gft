@@ -161,7 +161,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
                     <excludes>
-                        <exclude>**/load/**</exclude>
+                        <exclude>org/example/reportsworkshopgft/load/**</exclude>
                     </excludes>
                 </configuration>
             </plugin>
