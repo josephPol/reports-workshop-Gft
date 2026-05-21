@@ -8,8 +8,7 @@ import io.gatling.javaapi.http.*;
 
 public class EventLogLoadSimulation extends Simulation {
 
-    private static final String BASE_URL =
-            System.getProperty("baseUrl", "http://localhost:8081");
+    private static final String BASE_URL = System.getProperty("baseUrl", "http://localhost:8081");
 
     private static final int CONCURRENT_USERS = 20;
     private static final int RAMP_SECONDS = 10;
