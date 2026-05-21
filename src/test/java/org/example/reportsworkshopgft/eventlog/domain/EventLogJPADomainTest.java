@@ -7,6 +7,7 @@ import org.example.reportsworkshopgft.eventlog.domain.exception.EventLogIdNotUui
 import org.example.reportsworkshopgft.eventlog.domain.exception.InvalidEventLogIdException;
 import org.example.reportsworkshopgft.eventlog.infrastructure.persistence.EventLogIdJPA;
 import org.example.reportsworkshopgft.eventlog.infrastructure.persistence.EventLogJPA;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class EventLogJPADomainTest {
@@ -68,13 +69,15 @@ class EventLogJPADomainTest {
     }
 
     @Test
+    @DisplayName("Should expose available domain enums accurately")
     void shouldExposeAvailableDomainEnums() {
+        // Comprobaciones seguras de EventType usando valueOf
         assertEquals(EventType.TIME_ADVANCED, EventType.valueOf("TIME_ADVANCED"));
-        assertEquals(
-                EventType.WAREHOUSE_STOCK_CHANGED,
-                EventType.values()[EventType.values().length - 1]);
+        assertEquals(EventType.WAREHOUSE_STOCK_CHANGED, EventType.valueOf("WAREHOUSE_STOCK_CHANGED"));
+        assertEquals(EventType.TRUCK_DELETED, EventType.valueOf("TRUCK_DELETED"));
+
+        // Comprobaciones de SourceService
         assertEquals(SourceService.FACTORY, SourceService.valueOf("FACTORY"));
-        assertEquals(
-                SourceService.DELIVERY, SourceService.values()[SourceService.values().length - 1]);
+        assertEquals(SourceService.DELIVERY, SourceService.valueOf("DELIVERY"));
     }
 }

@@ -71,6 +71,9 @@ public class RabbitMQConfig {
     public static final String WAREHOUSE_REGISTERED_ROUTING_KEY = "warehouse.registered.v1";
     public static final String WAREHOUSE_REGISTERED_QUEUE_NAME = "reports.warehouse.registered.v1";
 
+    public static final String TRUCK_DELETED_ROUTING_KEY = "truck.deleted.v1";
+    public static final String TRUCK_DELETED_QUEUE_NAME = "reports.truck.deleted.v1";
+
     @Bean
     public TopicExchange timeExchange() {
         TopicExchange exchange = new TopicExchange(TIME_EXCHANGE);
@@ -168,6 +171,11 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue truckDeletedQueue() {
+        return new Queue(TRUCK_DELETED_QUEUE_NAME, true);
+    }
+
+    @Bean
     public Queue recipeRegisteredQueue() {
         return new Queue(RECIPE_REGISTERED_QUEUE_NAME, true);
     }
@@ -196,6 +204,13 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(truckRegisteredQueue())
                 .to(transportExchange())
                 .with(TRUCK_REGISTERED_ROUTING_KEY);
+    }
+
+    @Bean
+    public Binding truckDeletedBinding() {
+        return BindingBuilder.bind(truckDeletedQueue())
+                .to(transportExchange())
+                .with(TRUCK_DELETED_ROUTING_KEY);
     }
 
     @Bean
